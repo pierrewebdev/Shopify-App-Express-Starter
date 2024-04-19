@@ -51,6 +51,8 @@ module.exports = function(app, /*passport,*/ mysqlAPI, traits, env) {
     app.get('/dashboard', RequireAuth, dashboardController.index);
     app.get('/proxied_req', returnsController.index);
 
+    app.get('/getExchangeData', returnsController.getExchangeData);
+
     const apiRoutePrefix = '/api/'; // This is so if we do versioning like /api/v1 or /api/v2 
     
     //Sync data APIs
@@ -69,16 +71,7 @@ module.exports = function(app, /*passport,*/ mysqlAPI, traits, env) {
     app.post(ajaxPrefix+'orders', apiAuth, ordersController.listOrders);
     app.post(ajaxPrefix+'products', apiAuth, productsController.listProducts);
     app.post(ajaxPrefix+'product/collections', apiAuth, productsController.listProductCollections);
-
-    //Authenticated APIs
-    const dashboardPrefix = apiRoutePrefix + 'dashboard';
-    app.get(dashboardPrefix, apiAuth, dashboardController.index);
-    app.get(dashboardPrefix+'/sales/card/info', apiAuth, dashboardController.getSalesCardInfo);
-    
-    //Shopify APIs for app usage billing
-    app.get(apiRoutePrefix+'setupAppUsageBilling', apiAuth, dashboardController.setupAppUsageBilling);
-    app.get(apiRoutePrefix+'createActionOnBilling', apiAuth, dashboardController.createActionOnBilling);
-    
+ 
     //Login API
     //app.post(apiRoutePrefix+'login', passport.authenticate('local-signin'), authController.login);
 

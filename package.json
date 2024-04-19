@@ -1,5 +1,5 @@
 {
-  "name": "multivendorapp",
+  "name": "ReturnSage Shopify App",
   "version": "1.0.0",
   "description": "ExpressJS server to run alongside the Laravel App",
   "main": "server.js",
@@ -14,6 +14,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-generator": "^4.16.1",
@@ -30,6 +31,7 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "sequelize": "^6.33.0",
-    "shopify-application-proxy-verification": "^1.1.4"
+    "shopify-application-proxy-verification": "^1.1.4",
+    "underscore": "^1.13.6"
   }
 }

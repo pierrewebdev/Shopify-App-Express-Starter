@@ -2,20 +2,19 @@ const express = require('express')
 const moment = require('moment');
 const cookieParser = require("cookie-parser");
 const app = express()
+var cors = require('cors');
 const port = 3000;
 const bodyParser = require('body-parser'); // middleware
-app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 //var passport = require('passport');
 var session = require('express-session');
 var env = require('dotenv').config(); 
 env = env.parsed;
 
-app.use(
-  express.urlencoded({
-    extended: true 
-  })
-);
+app.use( express.urlencoded({ extended: true }) );
 app.use(express.json());
 // For Passport 
 app.use(session({
@@ -60,18 +59,6 @@ app.get('/', (req, res) => {
     "message": "Hello World" 
   }).status(200);
 });
-
-app.get('/proxied_req', async (req, res) => {
-  console.log('In proxied req route');
-  console.log('query');
-  console.log(req.query);
-  console.log('params');
-  console.log(req.params);
-  console.log('body');
-  console.log(req.body);
-  
-  return res.json({'status': 'OK', 'message': 'You are here in the app proxy'});
-})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
