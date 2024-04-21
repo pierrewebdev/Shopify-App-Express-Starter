@@ -9,11 +9,12 @@ module.exports = (mysqlAPI, traits, env) => {
     return {
         index: async function (req, res) {
             try {
-                var verifyRequest       = verifyAppProxyHmac(req.query, env.SHOPIFY_CLIENT_SECRET)
+                //local dev env should pass
+                var verifyRequest       = env.APP_URL == 'http://localhost:3000/' ? true : verifyAppProxyHmac(req.query, env.SHOPIFY_CLIENT_SECRET)
                 if(verifyRequest) {
                     var customerDetails = await shopifyService.getCustomerDetails(req.query);
                     var orderDetails    = await shopifyService.getOrderDetails(req.query);
-
+                    console.log(orderDetails);
                     var exchangeItems   = await returnService.getItemsEligibleForExchange(req.query, orderDetails);
                     var returnItems     = await returnService.getItemsEligibleForReturn(req.query, orderDetails);
                     

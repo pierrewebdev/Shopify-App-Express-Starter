@@ -14,7 +14,8 @@ module.exports =  {
 
     getOrderDetails: async function (query) {
         var dbRecord = await functionTrait.getStoreByDomain(query.shop);
-        var endpoint = functionTrait.getShopifyAPIURLForStore('orders.json', dbRecord);
+        var endpoint = functionTrait.getShopifyAPIURLForStore('orders.json?status=any', dbRecord);
+        console.log(endpoint);
         var headers = functionTrait.getShopifyAPIHeadersForStore(dbRecord);
         var response = await requestTrait.makeAnAPICallToShopify('GET', endpoint, headers); 
         var orders = response.respBody.orders;
