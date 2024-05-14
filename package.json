@@ -1,12 +1,12 @@
 {
-  "name": "ReturnSage Shopify App",
+  "name": "Shopify App Template",
   "version": "1.0.0",
-  "description": "ExpressJS server to run alongside the Laravel App",
+  "description": "ExpressJS server used to create basic Shopify Apps",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "SidTheITGuy",
+  "author": "Code That Converts",
   "license": "ISC",
   "dependencies": {
     "@elastic/elasticsearch": "^8.10.0",

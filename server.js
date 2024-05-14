@@ -3,7 +3,7 @@ const moment = require('moment');
 const cookieParser = require("cookie-parser");
 const app = express()
 var cors = require('cors');
-const port = 3000;
+const port = 80;
 const bodyParser = require('body-parser'); // middleware
 
 app.use(bodyParser.urlencoded({ extended: true }));

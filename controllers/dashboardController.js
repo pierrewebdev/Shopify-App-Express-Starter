@@ -1,4 +1,3 @@
-const lineItemId = "gid://shopify/AppSubscriptionLineItem/31562236177?v=1&index=0"
 const nodeCache = require('node-cache');
 const myCache = new nodeCache();
 
@@ -7,11 +6,8 @@ module.exports = (mysqlAPI, traits) => {
   const requestTrait = traits.RequestTrait;
 
   return {
-    
     index: async function (req, res) {
       try {
-        // console.log(req);
-        // console.log('In dashboard api '+JSON.stringify(req.account));
         return res.json({'status': true, 'message': 'In dashboard api', 'account': req.session.user});
       } catch (error) {
         return res.json({

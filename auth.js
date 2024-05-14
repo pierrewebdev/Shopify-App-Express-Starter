@@ -3,14 +3,12 @@ const jwt = require('jsonwebtoken');
 
 module.exports = function(app, /*passport,*/ mysqlAPI, traits, env) {
 
-    var authController = require('./controllers/authController');
     var dashboardController = require('./controllers/dashboardController')(mysqlAPI, traits);
     var storeController = require('./controllers/storeController')(mysqlAPI, traits);
-    var productsController = require('./controllers/productsController')(mysqlAPI, traits);
-    var ordersController = require('./controllers/ordersController')(mysqlAPI, traits);
     var installationController = require('./controllers/installationController')(mysqlAPI, traits, env);
-    var returnsController = require('./controllers/returnsController')(mysqlAPI, traits, env);
-
+    
+    /** Do whatever with this middleware */
+    //apiAuth is not currently being used
     function apiAuth(req, res, next) {
         if (req.headers['authorization']) {
             try {
@@ -49,9 +47,6 @@ module.exports = function(app, /*passport,*/ mysqlAPI, traits, env) {
     app.get('/shopify/auth/redirect', installationController.redirect);
 
     app.get('/dashboard', RequireAuth, dashboardController.index);
-    app.get('/proxied_req', returnsController.index);
-
-    app.get('/getExchangeData', returnsController.getExchangeData);
 
     const apiRoutePrefix = '/api/'; // This is so if we do versioning like /api/v1 or /api/v2 
     
@@ -61,25 +56,4 @@ module.exports = function(app, /*passport,*/ mysqlAPI, traits, env) {
     app.get(syncPrefix+'products', storeController.syncProducts);
     app.get(syncPrefix+'products/collections', storeController.syncProductCollections);
     app.get(syncPrefix+'locations', storeController.syncStoreLocations);
-    
-    //Show APIs
-    app.get(apiRoutePrefix + 'product/show', apiAuth, productsController.listProductDetails);
-    app.get(apiRoutePrefix + 'stores', apiAuth, storeController.listStores);
-
-    //AJAX APIs
-    const ajaxPrefix = apiRoutePrefix + 'ajax/';
-    app.post(ajaxPrefix+'orders', apiAuth, ordersController.listOrders);
-    app.post(ajaxPrefix+'products', apiAuth, productsController.listProducts);
-    app.post(ajaxPrefix+'product/collections', apiAuth, productsController.listProductCollections);
- 
-    //Login API
-    //app.post(apiRoutePrefix+'login', passport.authenticate('local-signin'), authController.login);
-
-    //MongoDB routes
-    app.post(apiRoutePrefix + 'insertAppLogs', apiAuth, storeController.insertAppLogs);
-    app.get(apiRoutePrefix + 'getAppLogs', apiAuth, storeController.getAppLogs);
-
-    //Theme app extension routes
-    app.post(apiRoutePrefix + 'store/liveTheme', apiAuth, storeController.getLiveThemeForStore);
-    app.post(apiRoutePrefix + 'checkStoreSetup', apiAuth, storeController.checkStoreSetup);
 }
