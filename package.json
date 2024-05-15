@@ -16,9 +16,9 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
+    "ejs": "^3.1.10",
     "express": "^4.18.2",
     "express-generator": "^4.16.1",
-    "express-handlebars": "^7.1.2",
     "express-session": "^1.18.0",
     "ioredis": "^5.3.2",
     "jsonwebtoken": "^9.0.2",
@@ -30,8 +30,8 @@
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
+    "ramda": "^0.30.0",
     "sequelize": "^6.33.0",
-    "shopify-application-proxy-verification": "^1.1.4",
-    "underscore": "^1.13.6"
+    "shopify-application-proxy-verification": "^1.1.4"
   }
 }
