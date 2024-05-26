@@ -2,7 +2,7 @@ module.exports = (mysqlAPI, traits, env) => {
     const functionTrait = traits.FunctionTrait;
     const requestTrait = traits.RequestTrait;
 
-    var accessScopes = 'read_products,write_orders,write_returns,read_customers,write_fulfillments';
+    var accessScopes = 'read_products,write_orders,write_returns,read_customers,write_fulfillments, read_draft_orders';
     var clientId = env.SHOPIFY_CLIENT_ID;
     var clientSecret = env.SHOPIFY_CLIENT_SECRET;
     var redirectUri = env.APP_URL+'shopify/auth/redirect';

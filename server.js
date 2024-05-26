@@ -54,10 +54,12 @@ app.set('etag', false);
 require('./auth.js')(app, /*passport,*/ mysqlAPI, traits, env);
 
 app.get('/', (req, res) => {
-  res.json({
-    "status": true,
-    "message": "Hello World" 
-  }).status(200);
+  // res.json({
+  //   "status": true,
+  //   "message": "Hello World" 
+  // }).status(200);
+
+  res.render("index")
 });
 
 app.listen(port, () => {

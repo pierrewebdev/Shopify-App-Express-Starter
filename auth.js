@@ -49,11 +49,32 @@ module.exports = function(app, /*passport,*/ mysqlAPI, traits, env) {
     app.get('/dashboard', RequireAuth, dashboardController.index);
 
     const apiRoutePrefix = '/api/'; // This is so if we do versioning like /api/v1 or /api/v2 
-    
+    const helpers = traits.FunctionTrait
+    const shopifyAPI = traits.RequestTrait.makeAnAPICallToShopify
+
     //Sync data APIs
     const syncPrefix = apiRoutePrefix +'sync/';
     app.get(syncPrefix+'orders', storeController.syncOrders);
     app.get(syncPrefix+'products', storeController.syncProducts);
     app.get(syncPrefix+'products/collections', storeController.syncProductCollections);
     app.get(syncPrefix+'locations', storeController.syncStoreLocations);
+
+    // ====================== Main App Routes ====================== //
+
+    /* route: /api/get-single-order */
+    app.get(apiRoutePrefix + 'get-single-order', async (req, res) => {
+        /* Pseudocode 
+          1. Make a single API Request to Shopify
+          2. Return the json from the request
+        */
+
+       const domain = "appless-wishlist-demo-store.myshopify.com"
+       const store = await helpers.getStoreByDomain(domain)
+
+       const headers = helpers.getShopifyAPIHeadersForStore(store);
+       const endpoint = helpers.getShopifyAPIURLForStore(`draft_orders.json`, store)
+       const response = await shopifyAPI("GET", endpoint, headers)
+
+       res.json(response)
+    })
 }
