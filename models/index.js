@@ -12,10 +12,11 @@ fs.readdirSync(__dirname)
         return (file.indexOf(".") !== 0) && (file !== "index.js");
     })
     .forEach(function (file) {
-        const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes)
+        const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes) // Two Steps in one
         db[model.name] = model;
     });
 
+// The code below sets up Table Relationships - Has One and Has Many relationships
 Object.keys(db).forEach(function (modelName) {
     if ("associate" in db[modelName]) {
         db[modelName].associate(db);
