@@ -1,28 +1,76 @@
-module.exports = function(sequelize, DataTypes) {
+// module.exports = function(sequelize, DataTypes) {
 
-    const Users = sequelize.define('user_store', {
-        id: {
-            autoIncrement: true,
-            primaryKey: true,
-            type: DataTypes.INTEGER
-        },
-        store_id: {
-            type: DataTypes.INTEGER,
-            notEmpty: true
-        },
-        user_id: {
-            type: DataTypes.INTEGER,
-            notEmpty: true
-        },
-        createdAt: {
-            field: 'created_at',
-            type: DataTypes.DATE,
-        },
-        updatedAt: {
-            field: 'updated_at',
-            type: DataTypes.DATE,
-        }
-    });
+//     const Users = sequelize.define('user_store', {
+//         id: {
+//             autoIncrement: true,
+//             primaryKey: true,
+//             type: DataTypes.INTEGER
+//         },
+//         store_id: {
+//             type: DataTypes.INTEGER,
+//             notEmpty: true
+//         },
+//         user_id: {
+//             type: DataTypes.INTEGER,
+//             notEmpty: true
+//         },
+//         createdAt: {
+//             field: 'created_at',
+//             type: DataTypes.DATE,
+//         },
+//         updatedAt: {
+//             field: 'updated_at',
+//             type: DataTypes.DATE,
+//         }
+//     });
     
-    return Users;
+//     return Users;
+// }
+
+
+//New Class based Sequelize implementation
+const {Sequelize, Model, DataTypes} = require('sequelize')
+const config = require('../config.json')[env];
+const database = config.database
+const username = config.username
+const password = config.password
+
+const sequelize = new Sequelize(database, username, password, config)
+
+
+class UserStore extends Model {
+    getStoreDomain(){
+        return this.myshopify_domain
+    }
 }
+
+UserStore.init({
+    //model attributes
+    table_id: {
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER
+    },
+    store_id: {
+        type: DataTypes.INTEGER,
+        notEmpty: true
+    },
+    user_id: {
+        type: DataTypes.INTEGER,
+        notEmpty: true
+    },
+    createdAt: {
+        field: 'created_at',
+        type: DataTypes.DATE,
+    },
+    updatedAt: {
+        field: 'updated_at',
+        type: DataTypes.DATE,
+    }
+}, 
+{
+    // Other model options go here
+    sequelize, // We need to pass the connection instance
+    modelName: 'UserStore', // We need to choose the Model Name (Table Name)
+},
+)
