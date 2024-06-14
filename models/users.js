@@ -1,51 +1,8 @@
-// module.exports = function(sequelize, DataTypes) {
-
-//     const Users = sequelize.define('user', {
-//         id: {
-//             autoIncrement: true,
-//             primaryKey: true,
-//             type: DataTypes.INTEGER
-//         },
-//         name: {
-//             type: DataTypes.STRING,
-//             notEmpty: true
-//         },
-//         email: {
-//             type: DataTypes.STRING,
-//             validate: {
-//                 isEmail: true
-//             }
-//         },
-//         password: {
-//             type: DataTypes.STRING,
-//             allowNull: false
-//         },
-//         email_verified_at: {
-//             type: DataTypes.DATE
-//         },
-//         remember_token: {
-//             type: DataTypes.STRING
-//         },
-//         createdAt: {
-//             field: 'created_at',
-//             type: DataTypes.DATE,
-//         },
-//         updatedAt: {
-//             field: 'updated_at',
-//             type: DataTypes.DATE,
-//         },
-//         authtoken: {
-//             type: DataTypes.STRING
-//         }
-//     });
-    
-//     return Users;
-// }
-
-
 //New Class based Sequelize implementation
 const {Sequelize, Model, DataTypes} = require('sequelize')
-const config = require('../config.json')[env];
+const appEnvironment = process.env.NODE_ENV || "development";
+const config = require('../config.json')[appEnvironment];
+
 const database = config.database
 const username = config.username
 const password = config.password
@@ -104,6 +61,28 @@ User.init({
 {
     // Other model options go here
     sequelize, // We need to pass the connection instance
-    modelName: 'User', // We need to choose the Model Name (Table Name)
+    tableName: 'User', // We need to choose the Model Name (Table Name)
 },
 )
+
+User.sync()
+
+module.exports = User
+
+// async function createTestUser(){
+//     const newUser = await User.create({
+//         id: 1,
+//         name: "Patrick Pierre",
+//         email: "patrick@codethatconverts.com",
+//         password: "rootuser",
+//         email_verified_at: Date.now(),
+//         remember_token: "token",
+//         authtoken: "token",
+//         createdAt: Date.now(),
+//         updatedAt: Date.now()
+//     })
+
+//     console.log(newUser)
+//     return newUser
+// }
+

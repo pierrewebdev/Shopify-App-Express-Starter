@@ -1,52 +1,8 @@
-// module.exports = function(sequelize, DataTypes) {
-
-//     const DraftOrder = sequelize.define('draft_order', {
-//         id: {
-//             autoIncrement: true,
-//             primaryKey: true,
-//             type: DataTypes.INTEGER
-//         },
-//         store_id: {
-//             type: DataTypes.INTEGER,
-//             notEmpty: true
-//         },
-//         email: {
-//             type: DataTypes.STRING,
-//             validate: {
-//                 isEmail: true
-//             }
-//         },
-//         password: {
-//             type: DataTypes.STRING,
-//             allowNull: false
-//         },
-//         email_verified_at: {
-//             type: DataTypes.DATE
-//         },
-//         remember_token: {
-//             type: DataTypes.STRING
-//         },
-//         createdAt: {
-//             field: 'created_at',
-//             type: DataTypes.DATE,
-//         },
-//         updatedAt: {
-//             field: 'updated_at',
-//             type: DataTypes.DATE,
-//         },
-//         authtoken: {
-//             type: DataTypes.STRING
-//         }
-//     });
-    
-//     return DraftOrder;
-// }
-
-
-
 //New Class based Sequelize implementation
 const {Sequelize, Model, DataTypes} = require('sequelize')
-const config = require('../config.json')[env];
+const appEnvironment = process.env.NODE_ENV || "development";
+const config = require('../config.json')[appEnvironment];
+
 const database = config.database
 const username = config.username
 const password = config.password
@@ -120,3 +76,7 @@ DraftOrder.init({
     modelName: 'DraftOrder', // We need to choose the Model Name (Table Name)
 },
 )
+
+DraftOrder.sync()
+
+module.exports = DraftOrder

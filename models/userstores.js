@@ -30,7 +30,9 @@
 
 //New Class based Sequelize implementation
 const {Sequelize, Model, DataTypes} = require('sequelize')
-const config = require('../config.json')[env];
+const appEnvironment = process.env.NODE_ENV || "development";
+const config = require('../config.json')[appEnvironment];
+
 const database = config.database
 const username = config.username
 const password = config.password
@@ -74,3 +76,7 @@ UserStore.init({
     modelName: 'UserStore', // We need to choose the Model Name (Table Name)
 },
 )
+
+UserStore.sync()
+
+module.exports = UserStore
