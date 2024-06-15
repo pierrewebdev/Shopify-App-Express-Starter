@@ -1,28 +1,14 @@
-"use strict";
-var fs = require("fs");
-var path = require("path");
-var Sequelize = require("sequelize");
-var env = process.env.NODE_ENV || "development";
-var config = require('../config.json')[env];
-var sequelize = new Sequelize(config.database, config.username, config.password, config);
-var db = {};
+//Initialize Models and Set up Relationships
+const User = require("./user.js")
+const ShopifyStore = require("./shopifystore.js")
+const UserStore = require("./userstore.js")
+const DraftOrder = require("./draftorder.js")
 
-fs.readdirSync(__dirname)
-    .filter(function (file) {
-        return (file.indexOf(".") !== 0) && (file !== "index.js");
-    })
-    .forEach(function (file) {
-        const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes) // Two Steps in one
-        db[model.name] = model;
-    });
 
-// The code below sets up Table Relationships - Has One and Has Many relationships
-Object.keys(db).forEach(function (modelName) {
-    if ("associate" in db[modelName]) {
-        db[modelName].associate(db);
-    }
-});
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
-module.exports = db;
+User.hasMany(UserStore);
+ShopifyStore.hasMany(UserStore);
+ShopifyStore.hasMany(DraftOrder)
+
+UserStore.belongsTo(User);
+UserStore.belongsTo(ShopifyStore);
