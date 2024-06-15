@@ -10,13 +10,26 @@ const password = config.password
 const sequelize = new Sequelize(database, username, password, config)
 
 
-class User extends Model {
+class StoreAdmin extends Model {
     getStoreDomain(){
         return this.myshopify_domain
     }
+
+    async createStoreAdmin(){
+        return await StoreAdmin.create({
+        id: 1,
+        name: "Patrick Pierre",
+        email: "patrick@codethatconverts.com",
+        password: "rootuser",
+        email_verified_at: Date.now(),
+        remember_token: "token",
+        authtoken: "token",
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+    })
 }
 
-User.init({
+StoreAdmin.init({
     //model attributes
     table_id: {
         autoIncrement: true,
@@ -61,28 +74,13 @@ User.init({
 {
     // Other model options go here
     sequelize, // We need to pass the connection instance
-    tableName: 'User', // We need to choose the Model Name (Table Name)
+    tableName: 'StoreAdmin', // We need to choose the Model Name (Table Name)
 },
 )
 
-User.sync()
+StoreAdmin.sync()
 
-module.exports = User
+module.exports = StoreAdmin
 
-// async function createTestUser(){
-//     const newUser = await User.create({
-//         id: 1,
-//         name: "Patrick Pierre",
-//         email: "patrick@codethatconverts.com",
-//         password: "rootuser",
-//         email_verified_at: Date.now(),
-//         remember_token: "token",
-//         authtoken: "token",
-//         createdAt: Date.now(),
-//         updatedAt: Date.now()
-//     })
 
-//     console.log(newUser)
-//     return newUser
-// }
 
