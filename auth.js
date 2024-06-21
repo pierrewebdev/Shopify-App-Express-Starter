@@ -52,12 +52,15 @@ module.exports = function(app, /*passport,*/ mysqlAPI, traits, env) {
     const helpers = traits.FunctionTrait
     const shopifyAPI = traits.RequestTrait.makeAnAPICallToShopify
 
-    //Sync data APIs
+    //Sync data from Shopify Store API with App Database
+    /* examples below aren't being used and are just there as an example
+    
     const syncPrefix = apiRoutePrefix +'sync/';
     app.get(syncPrefix+'orders', storeController.syncOrders);
     app.get(syncPrefix+'products', storeController.syncProducts);
     app.get(syncPrefix+'products/collections', storeController.syncProductCollections);
     app.get(syncPrefix+'locations', storeController.syncStoreLocations);
+    */
 
     // ====================== Main App Routes ====================== //
 

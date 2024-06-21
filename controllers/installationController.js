@@ -152,6 +152,7 @@ module.exports = (mysqlAPI, traits, env) => {
                 "password": await hash('123456', 8)
             };
 
+            //=== Have to use my own code here since I changed the Model files
             var userRecord = await mysqlAPI.updateOrCreateUserRecord(userBody);
             var storeRecord = await mysqlAPI.updateOrCreateStoreRecord(storeBody);
             var userStoreRecord = await mysqlAPI.updateOrCreateUserStoreMapping(userRecord, storeRecord);

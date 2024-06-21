@@ -15,18 +15,19 @@ class StoreAdmin extends Model {
         return this.myshopify_domain
     }
 
-    async createStoreAdmin(){
-        return await StoreAdmin.create({
-        id: 1,
-        name: "Patrick Pierre",
-        email: "patrick@codethatconverts.com",
-        password: "rootuser",
-        email_verified_at: Date.now(),
-        remember_token: "token",
-        authtoken: "token",
-        createdAt: Date.now(),
-        updatedAt: Date.now()
-    })
+    async createAdmin(){
+        return await this.create({
+            id: 1,
+            name: "Patrick Pierre",
+            email: "patrick@codethatconverts.com",
+            password: "rootuser",
+            email_verified_at: Date.now(),
+            remember_token: "token",
+            authtoken: "token",
+            createdAt: Date.now(),
+            updatedAt: Date.now()
+        })
+    }
 }
 
 StoreAdmin.init({
@@ -81,6 +82,21 @@ StoreAdmin.init({
 StoreAdmin.sync()
 
 module.exports = StoreAdmin
+
+/* 
+   async createStoreAdmin(){
+        return await this.create({
+        id: 1,
+        name: "Patrick Pierre",
+        email: "patrick@codethatconverts.com",
+        password: "rootuser",
+        email_verified_at: Date.now(),
+        remember_token: "token",
+        authtoken: "token",
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+    })
+*/
 
 
 

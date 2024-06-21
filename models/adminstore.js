@@ -10,13 +10,13 @@ const password = config.password
 const sequelize = new Sequelize(database, username, password, config)
 
 
-class UserStore extends Model {
+class AdminStore extends Model {
     getStoreDomain(){
         return this.myshopify_domain
     }
 }
 
-UserStore.init({
+AdminStore.init({
     //model attributes
     table_id: {
         autoIncrement: true,
@@ -43,10 +43,10 @@ UserStore.init({
 {
     // Other model options go here
     sequelize, // We need to pass the connection instance
-    modelName: 'UserStore', // We need to choose the Model Name (Table Name)
+    modelName: 'AdminStore', // We need to choose the Model Name (Table Name)
 },
 )
 
-UserStore.sync()
+AdminStore.sync()
 
-module.exports = UserStore
+module.exports = AdminStore

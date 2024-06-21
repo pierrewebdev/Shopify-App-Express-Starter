@@ -35,8 +35,8 @@ models.sequelize.sync().then(function() {
   console.log(err, "Something went wrong with the Database Update!");
 });
 
-//Load mysql
-const mysqlAPI = require('./src/mysql-api')(Sequelize, DataTypes, env);
+//Load mysql -- Want to write my own version of this
+//const mysqlAPI = require('./src/mysql-api')(Sequelize, DataTypes, env);
 
 //Load Traits 
 const FunctionTrait = require('./traits/functions');
