@@ -106,44 +106,94 @@ module.exports = (mysqlAPI, traits, env) => {
             }
         },
 
-        redirect: async function (req, res) {
-            try {
-                if(req.query.hasOwnProperty('shop') && req.query.hasOwnProperty('code')) {
-                    var hmacValid = await functionTrait.isRequestFromShopify(req.query, clientSecret);
-                    if(hmacValid) {
-                        var shop = req.query.shop;
-                        var accessToken = await requestAccessTokenFromShopify(req.query);
-                        if(accessToken !== null) {
-                            var shopifyStore = await getShopifyStoreDetails(req.query, accessToken);
-                            await saveDetailsToDatabase(shopifyStore, accessToken, req.query);
+        // redirect: async function (req, res) {
+        //     try {
+        //         if(req.query.hasOwnProperty('shop') && req.query.hasOwnProperty('code')) {
+        //             var hmacValid = await functionTrait.isRequestFromShopify(req.query, clientSecret);
+        //             if(hmacValid) {
+        //                 var shop = req.query.shop;
+        //                 var accessToken = await requestAccessTokenFromShopify(req.query);
+        //                 if(accessToken !== null) {
+        //                     var shopifyStore = await getShopifyStoreDetails(req.query, accessToken);
+        //                     await saveDetailsToDatabase(shopifyStore, accessToken, req.query);
                         
-                            var dbRecord = await functionTrait.getStoreByDomain(shop);    
-                            var userShop = await mysqlAPI.findUserForStoreId(dbRecord);
-                            var user = await mysqlAPI.findUserByUserShop(userShop);
+        //                     var dbRecord = await functionTrait.getStoreByDomain(shop);    
+        //                     var userShop = await mysqlAPI.findUserForStoreId(dbRecord);
+        //                     var user = await mysqlAPI.findUserByUserShop(userShop);
 
-                            if(req.session.user != undefined && req.session.user != null)
-                                req.session.destroy();
-                            req.session.user = {
-                                id: user.id
-                            };
+        //                     if(req.session.user != undefined && req.session.user != null)
+        //                         req.session.destroy();
+        //                     req.session.user = {
+        //                         id: user.id
+        //                     };
 
-                            return res.redirect('/dashboard');
-                        }
-                    }
-                } 
+        //                     return res.redirect('/dashboard');
+        //                 }
+        //             }
+        //         } 
 
+        //         return res.json({
+        //             'status': false, 
+        //             'message': 'Invalid request.',
+        //             'request': req.query
+        //         });
+        //     } catch (error) {
+        //         return res.json({
+        //             data: null,
+        //             count: 0,
+        //             query: req.query,
+        //             message: error.message
+        //         })
+        //     }
+        // },
+
+        redirect: async function (req, res) {
+            
+            try {
+                if(!(req.query.hasOwnProperty('shop') && req.query.hasOwnProperty('code'))){
+                    return res.json({
+                        'status': false, 
+                        'message': 'Invalid request.',
+                        'request': req.query
+                    });
+                }
+
+                const hmacValid = await functionTrait.isRequestFromShopify(req.query, clientSecret);
+                if(!hmacValid) {
+                    return res.json({
+                        'status': false, 
+                        'message': 'Invalid request.',
+                        'request': req.query
+                    });
+                }
+
+                const shop = req.query.shop;
+                const accessToken = await requestAccessTokenFromShopify(req.query);
+
+                //Early return if accessToken doesn't have data in it
+                if(!(accessToken !== null)) return
+
+                const shopifyStore = await getShopifyStoreDetails(req.query, accessToken);
+                await saveDetailsToDatabase(shopifyStore, accessToken, req.query);
+            
+                const dbRecord = await functionTrait.getStoreByDomain(shop);    
+                const userShop = await mysqlAPI.findUserForStoreId(dbRecord);
+                const user = await mysqlAPI.findUserByUserShop(userShop);
+
+                req.session.user = {
+                    id: user.id
+                };
+
+                return res.redirect('/dashboard');
+
+
+
+            } catch (error) {
                 return res.json({
                     'status': false, 
                     'message': 'Invalid request.',
                     'request': req.query
                 });
-            } catch (error) {
-                return res.json({
-                    data: null,
-                    count: 0,
-                    query: req.query,
-                    message: error.message
-                })
             }
         }
     }
