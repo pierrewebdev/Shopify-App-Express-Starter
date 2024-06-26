@@ -8,6 +8,7 @@ module.exports = (mysqlAPI, traits, env) => {
     var redirectUri = env.APP_URL+'shopify/auth/redirect';
 
     return {
+        /*
         index: async function (req, res) {
             try {
                 if(req.query.hasOwnProperty('shop') && req.query.hasOwnProperty('hmac') && req.query.shop.length && req.query.hmac.length) {
@@ -51,58 +52,57 @@ module.exports = (mysqlAPI, traits, env) => {
                 })
             }
         },
+        */
 
         index: async function (req, res){
             try {
-                if(!(req.query?.shop && req.query.shop.length)){
+                if(!(req.query.shop && req.query.shop.length)){
                     return res.json({
-                        'status': false, 
-                        'message': 'Invalid request.'
-                    });
+                        status: false, 
+                        message:'Invalid request'
+                    }).statusCode(401);
                 }
 
-                if(req.query?.hmac && req.query.shop.length){
+                if(req.query.hmac && req.query.shop.length){
                     return res.json({
-                        'status': false, 
-                        'message': 'Invalid request.'
-                    });
+                        status: false, 
+                        message:'Invalid request'
+                    }).statusCode(401);
                 }
 
-                //Redirect if Shopify Store is vvalid but hmac isn't
+                //Show Error message when hmac is not valid
                 const hmacValid = await functionTrait.isRequestFromShopify(req.query, clientSecret);
                 if(!hmacValid){
-                    const endpoint = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=${accessScopes}&redirect_uri=${redirectUri}`;
-                    return res.redirect(endpoint);
+                    return res.json({
+                        status: false, 
+                        message:'Invalid request'
+                    }).statusCode(401);
                 }
 
-                const shop = req.query?.shop;
+                const shop = req.query.shop;
                 const dbRecord = await functionTrait.getStoreByDomain(shop);
                 const tokenValid = await checkStoreTokenValidity(dbRecord);
 
-                //If token is not valid, how would I request a new access token?
+                //If token is not valid, you redirect to get a new one
                 if(!tokenValid) {
-                    return
+                    const endpoint = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=${accessScopes}&redirect_uri=${redirectUri}`;
+                    return res.redirect(endpoint);
                 }
 
                 const userShop = await mysqlAPI.findUserForStoreId(dbRecord);
                 const user = await mysqlAPI.findUserByUserShop(userShop);
                 
-                if(req.session.user != undefined && req.session.user != null)
-                    req.session.destroy();
                 req.session.user = {
                     id: user.id
                 };
 
-                return res.redirect('/dashboard');
-
-
-                
+                return res.redirect('/dashboard');         
             } catch (error) {
                 console.log("There was an issue with the request to install the Shopify App")
-                return res.json({
-                    data: null,
+                res.json({
+                    status: false, 
                     message: error.message
-                })
+                }).statusCode(409);
             }
         },
 
