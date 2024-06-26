@@ -18,6 +18,7 @@ module.exports = (mysqlAPI, traits, env) => {
                         
                         if(dbRecord != null) {
                             var tokenValid = await checkStoreTokenValidity(dbRecord);
+                            //what would happen if the token is not valid?
                             if(tokenValid) {
                                 var userShop = await mysqlAPI.findUserForStoreId(dbRecord);
                                 var user = await mysqlAPI.findUserByUserShop(userShop);
@@ -46,6 +47,60 @@ module.exports = (mysqlAPI, traits, env) => {
                     data: null,
                     count: 0,
                     query: null,
+                    message: error.message
+                })
+            }
+        },
+
+        index: async function (req, res){
+            try {
+                if(!(req.query?.shop && req.query.shop.length)){
+                    return res.json({
+                        'status': false, 
+                        'message': 'Invalid request.'
+                    });
+                }
+
+                if(req.query?.hmac && req.query.shop.length){
+                    return res.json({
+                        'status': false, 
+                        'message': 'Invalid request.'
+                    });
+                }
+
+                //Redirect if Shopify Store is vvalid but hmac isn't
+                const hmacValid = await functionTrait.isRequestFromShopify(req.query, clientSecret);
+                if(!hmacValid){
+                    const endpoint = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=${accessScopes}&redirect_uri=${redirectUri}`;
+                    return res.redirect(endpoint);
+                }
+
+                const shop = req.query?.shop;
+                const dbRecord = await functionTrait.getStoreByDomain(shop);
+                const tokenValid = await checkStoreTokenValidity(dbRecord);
+
+                //If token is not valid, how would I request a new access token?
+                if(!tokenValid) {
+                    return
+                }
+
+                const userShop = await mysqlAPI.findUserForStoreId(dbRecord);
+                const user = await mysqlAPI.findUserByUserShop(userShop);
+                
+                if(req.session.user != undefined && req.session.user != null)
+                    req.session.destroy();
+                req.session.user = {
+                    id: user.id
+                };
+
+                return res.redirect('/dashboard');
+
+
+                
+            } catch (error) {
+                console.log("There was an issue with the request to install the Shopify App")
+                return res.json({
+                    data: null,
                     message: error.message
                 })
             }
