@@ -11,21 +11,15 @@ const sequelize = new Sequelize(database, username, password, config)
 
 
 class StoreAdmin extends Model {
-    getStoreDomain(){
-        return this.myshopify_domain
-    }
-
-    async createAdmin(){
-        return await this.create({
-            id: 1,
-            name: "Patrick Pierre",
-            email: "patrick@codethatconverts.com",
-            password: "rootuser",
-            email_verified_at: Date.now(),
-            remember_token: "token",
-            authtoken: "token",
-            createdAt: Date.now(),
-            updatedAt: Date.now()
+    static async findOrCreateAdminById(admin){
+        return StoreAdmin.findOrCreate({
+            where: {id: adminId},
+            defaults: {
+                id: adminId,
+                name: admin.name,
+                email: admin.email,
+                password: admin.password
+            }
         })
     }
 }
@@ -36,9 +30,6 @@ StoreAdmin.init({
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER
-    },
-    id: {
-        type: DataTypes.BIGINT(20)
     },
     name: {
         type: DataTypes.STRING,

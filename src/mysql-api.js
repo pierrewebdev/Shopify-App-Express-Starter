@@ -3,6 +3,8 @@ module.exports = (Sequelize, DataTypes) => {
     var env = process.env.NODE_ENV;
     var config = require('../config.json')[env];
     var sequelize = new Sequelize(config.database, config.username, config.password, config);
+
+    //initialize the models and create an instance so we can start using them
     
     const Users = require('../models/users')(sequelize, DataTypes);
     const UserStores = require('../models/userstores')(sequelize, DataTypes);
