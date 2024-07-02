@@ -1,11 +1,15 @@
-module.exports = (mysqlAPI, traits, env) => {
-    const functionTrait = traits.FunctionTrait;
-    const requestTrait = traits.RequestTrait;
+module.exports = (mysqlAPI) => {
+
+    const functionTrait = require('../traits/functions');
+    const requestTrait = require('../traits/requests');
+    const env = require('dotenv').config()
 
     var accessScopes = 'read_products,write_orders,write_returns,read_customers,write_fulfillments, read_draft_orders';
     var clientId = env.SHOPIFY_CLIENT_ID;
     var clientSecret = env.SHOPIFY_CLIENT_SECRET;
     var redirectUri = env.APP_URL+'shopify/auth/redirect';
+
+    console.log("CLIENT SECRET",clientSecret)
 
     return {
         /*
@@ -56,19 +60,14 @@ module.exports = (mysqlAPI, traits, env) => {
 
         index: async function (req, res){
             try {
-                if(!(req.query.shop && req.query.shop.length)){
+                if(!(req.query.shop && req.query.shop)){
                     return res.json({
                         status: false, 
                         message:'Invalid request'
-                    }).statusCode(401);
+                    })
                 }
 
-                if(req.query.hmac && req.query.shop.length){
-                    return res.json({
-                        status: false, 
-                        message:'Invalid request'
-                    }).statusCode(401);
-                }
+                console.log("I got up to HMAC VALID")
 
                 //Show Error message when hmac is not valid
                 const hmacValid = await functionTrait.isRequestFromShopify(req.query, clientSecret);
@@ -76,13 +75,14 @@ module.exports = (mysqlAPI, traits, env) => {
                     return res.json({
                         status: false, 
                         message:'Invalid request'
-                    }).statusCode(401);
+                    })
                 }
 
                 const shop = req.query.shop;
                 const dbRecord = await functionTrait.getStoreByDomain(shop);
                 const tokenValid = await checkStoreTokenValidity(dbRecord);
 
+                console.log("I got up to TOKEN VALID")
                 //If token is not valid, you redirect to get a new one
                 if(!tokenValid) {
                     const endpoint = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=${accessScopes}&redirect_uri=${redirectUri}`;
@@ -102,7 +102,7 @@ module.exports = (mysqlAPI, traits, env) => {
                 res.json({
                     status: false, 
                     message: error.message
-                }).statusCode(409);
+                })
             }
         },
 
@@ -148,7 +148,6 @@ module.exports = (mysqlAPI, traits, env) => {
         // },
 
         redirect: async function (req, res) {
-            
             try {
                 if(!(req.query.hasOwnProperty('shop') && req.query.hasOwnProperty('code'))){
                     return res.json({
@@ -176,6 +175,7 @@ module.exports = (mysqlAPI, traits, env) => {
                 const shopifyStore = await getShopifyStoreDetails(req.query, accessToken);
                 await saveDetailsToDatabase(shopifyStore, accessToken, req.query);
             
+                return
                 const dbRecord = await functionTrait.getStoreByDomain(shop);    
                 const userShop = await mysqlAPI.findUserForStoreId(dbRecord);
                 const user = await mysqlAPI.findUserByUserShop(userShop);
@@ -256,6 +256,11 @@ module.exports = (mysqlAPI, traits, env) => {
                 "email": shopifyStore.email,
                 "password": await hash('123456', 8)
             };
+
+            console.log("REAL STORE DATA", storeBody)
+            console.log("USER", userBody)
+
+            return
 
             //=== Have to use my own code here since I changed the Model files
             var userRecord = await mysqlAPI.updateOrCreateUserRecord(userBody);

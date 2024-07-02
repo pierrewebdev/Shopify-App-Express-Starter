@@ -13,9 +13,8 @@ const sequelize = new Sequelize(database, username, password, config)
 class StoreAdmin extends Model {
     static async findOrCreateAdminById(admin){
         return StoreAdmin.findOrCreate({
-            where: {id: adminId},
+            where: {id: admin.id},
             defaults: {
-                id: adminId,
                 name: admin.name,
                 email: admin.email,
                 password: admin.password

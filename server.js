@@ -26,14 +26,14 @@ app.use(session({
 // app.use(passport.session()); 
 
 //Models 
-var models = require("./models");
-const { Sequelize, Model, DataTypes, DATE } = require('sequelize');
+// var models = require("./models");
+// const { Sequelize, Model, DataTypes, DATE } = require('sequelize');
 //Sync Database 
-models.sequelize.sync().then(function() {
-  console.log('Nice! All is looking good');
-}).catch(function(err) {
-  console.log(err, "Something went wrong with the Database Update!");
-});
+// models.sequelize.sync().then(function() {
+//   console.log('Nice! All is looking good');
+// }).catch(function(err) {
+//   console.log(err, "Something went wrong with the Database Update!");
+// });
 
 //Load mysql -- Want to write my own version of this
 //const mysqlAPI = require('./src/mysql-api')(Sequelize, DataTypes, env);
@@ -51,7 +51,9 @@ app.set('etag', false);
 
 //load passport strategies 
 //require('./passport/passport.js')(passport, models.user);
-require('./auth.js')(app, /*passport,*/ mysqlAPI, traits, env);
+//require('./auth.js')(app, /*passport,*/ mysqlAPI, traits, env);
+
+require('./auth.js')(app)
 
 app.get('/', (req, res) => {
   // res.json({

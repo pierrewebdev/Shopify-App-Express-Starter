@@ -11,10 +11,34 @@ const sequelize = new Sequelize(database, username, password, config)
 
 
 class ShopifyStore extends Model {
-    getStoreDomain(){
-        return this.myshopify_domain
+    static async findOrCreateStore(store_data){
+        return ShopifyStore.findOrCreate({
+            where: {id: store_data.id},
+            defaults: {
+                name: store_data.name,
+                shopify_id: store_data.id,
+                domain: store_data.domain,
+                accessToken: store_data.accessToken,
+                currency: store_data.currency,
+                email: store_data.email,
+                phone: store_data.phone
+            }
+        })
     }
 }
+
+/*
+This is what the store data looks like:
+ var storeBody = {
+    "id": shopifyStore.id,
+    "myshopify_domain": shopifyStore.domain,
+    "name": shopifyStore.name,
+    "accessToken": accessToken,
+    "currency": shopifyStore.currency,
+    "email": shopifyStore.email,
+    "phone": shopifyStore.phone
+};
+*/
 
 ShopifyStore.init({
     //model attributes
@@ -23,7 +47,7 @@ ShopifyStore.init({
         primaryKey: true,
         type: DataTypes.INTEGER
     },
-    id: {
+    shopify_id: {
         type: DataTypes.BIGINT(20)
     },
     myshopify_domain: {

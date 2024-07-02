@@ -1,5 +1,5 @@
 const { Sequelize, Model, DataTypes, DATE } = require('sequelize');
-const mysqlAPI = require('../src/mysql-api')(Sequelize, DataTypes);
+//const mysqlAPI = require('../src/mysql-api')(Sequelize, DataTypes);
 var crypto = require('crypto');
 const nodeCache = require('node-cache');
 const cacheInstance = new nodeCache();
@@ -25,8 +25,8 @@ module.exports = {
         data = data.join('');
         //var data = "logged_in_customer_id="+query.logged_in_customer_id+"path_prefix="+query.path_prefix+"shop="+query.shop+"timestamp="+query.timestamp;
         let calculated_signature = crypto.createHmac('sha256', clientSecret).update(data).digest('hex')
-        console.log(signature);
-        console.log(calculated_signature);
+        // console.log(signature);
+        // console.log(calculated_signature);
         return signature == calculated_signature;
     },
 
@@ -46,7 +46,14 @@ module.exports = {
             data.push(key+'='+val);
         }
         data = data.join('&');
-        const genHash = crypto.createHmac("sha256", clientSecret).update(data).digest("hex");
+
+        console.log("DATA After Joins", data)
+        console.log("HMAC After Joins", hmac)
+        const genHash = crypto
+            .createHmac("sha256", clientSecret)
+            .update(data)
+            .digest("hex");
+
         return genHash === hmac;
     },
 

@@ -1,11 +1,11 @@
 
 const jwt = require('jsonwebtoken');
 
-module.exports = function(app, /*passport,*/ mysqlAPI, traits, env) {
+module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
 
-    var dashboardController = require('./controllers/dashboardController')(mysqlAPI, traits);
-    var storeController = require('./controllers/storeController')(mysqlAPI, traits);
-    var installationController = require('./controllers/installationController')(mysqlAPI, traits, env);
+    // var dashboardController = require('./controllers/dashboardController')(/*mysqlAPI,*/ traits);
+    // var storeController = require('./controllers/storeController')(/*mysqlAPI,*/ traits);
+    var installationController = require('./controllers/installationController')(/*mysqlAPI,*/);
     
     /** Do whatever with this middleware */
     //apiAuth is not currently being used
@@ -46,11 +46,11 @@ module.exports = function(app, /*passport,*/ mysqlAPI, traits, env) {
     app.get('/shopify/auth', installationController.index);
     app.get('/shopify/auth/redirect', installationController.redirect);
 
-    app.get('/dashboard', RequireAuth, dashboardController.index);
+    app.get('/dashboard', RequireAuth, () => res.render("index"));
 
     const apiRoutePrefix = '/api/'; // This is so if we do versioning like /api/v1 or /api/v2 
-    const helpers = traits.FunctionTrait
-    const shopifyAPI = traits.RequestTrait.makeAnAPICallToShopify
+    // const helpers = traits.FunctionTrait
+    // const shopifyAPI = traits.RequestTrait.makeAnAPICallToShopify
 
     //Sync data from Shopify Store API with App Database
     /* examples below aren't being used and are just there as an example
