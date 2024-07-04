@@ -1,12 +1,10 @@
-const { Sequelize, Model, DataTypes, DATE } = require('sequelize');
-//const mysqlAPI = require('../src/mysql-api')(Sequelize, DataTypes);
 var crypto = require('crypto');
 const nodeCache = require('node-cache');
 const cacheInstance = new nodeCache();
 module.exports = {
-    getStoreByDomain: async function (shop) {
-        return await mysqlAPI.getStoreByDomain(shop);
-    },
+    // getStoreByDomain: async function (shop) {
+    //     return await mysqlAPI.getStoreByDomain(shop);
+    // },
 
     verifyProxyRequest: async function (query, clientSecret) {
         var data = new Array();
