@@ -1,15 +1,14 @@
-module.exports = (mysqlAPI) => {
+module.exports = () => {
 
     const functionTrait = require('../traits/functions');
     const requestTrait = require('../traits/requests');
+    const mysqlAPI = require("../src/mysql-api")
     const env = require('dotenv').config()
 
     var accessScopes = 'read_products,write_orders,write_returns,read_customers,write_fulfillments, read_draft_orders';
     var clientId = process.env.SHOPIFY_CLIENT_ID;
     var clientSecret = process.env.SHOPIFY_CLIENT_SECRET;
     var redirectUri = process.env.APP_URL+'shopify/auth/redirect';
-
-    console.log("CLIENT SECRET",clientSecret)
 
     return {
         /*
@@ -79,7 +78,7 @@ module.exports = (mysqlAPI) => {
                 }
 
                 const shop = req.query.shop;
-                const dbRecord = await functionTrait.getStoreByDomain(shop);
+                const dbRecord = await mysqlAPI.getStoreByDomain(shop);
                 const tokenValid = await checkStoreTokenValidity(dbRecord);
 
                 console.log("I got up to TOKEN VALID")

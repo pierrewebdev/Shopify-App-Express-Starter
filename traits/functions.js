@@ -1,11 +1,7 @@
 var crypto = require('crypto');
-const nodeCache = require('node-cache');
-const cacheInstance = new nodeCache();
+// const nodeCache = require('node-cache');
+// const cacheInstance = new nodeCache();
 module.exports = {
-    // getStoreByDomain: async function (shop) {
-    //     return await mysqlAPI.getStoreByDomain(shop);
-    // },
-
     verifyProxyRequest: async function (query, clientSecret) {
         var data = new Array();
         var signature = query.signature;
@@ -38,15 +34,13 @@ module.exports = {
             key = key.replace("=", "%3D");
             
             var val = req[key];
-            console.log(val);
+            // console.log(val);
             val = val.replace("%","%25");
             val = val.replace("&","%26");
             data.push(key+'='+val);
         }
         data = data.join('&');
 
-        console.log("DATA After Joins", data)
-        console.log("HMAC After Joins", hmac)
         const genHash = crypto
             .createHmac("sha256", clientSecret)
             .update(data)
