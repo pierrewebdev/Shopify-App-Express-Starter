@@ -10,15 +10,24 @@ const password = config.password
 const sequelize = new Sequelize(database, username, password, config)
 
 
-class AdminStore extends Model {
-    getStoreDomain(){
-        return this.myshopify_domain
+class UserStore extends Model {
+    static async findOrCreateUserStore(user, store){
+        return UserStore.findOrCreate({
+            where: {
+                store_id: store.id,
+                user_id: user.id
+            },
+            defaults: {
+                store_id: store.id,
+                user_id: user.id 
+            }
+        })
     }
 }
 
-AdminStore.init({
+UserStore.init({
     //model attributes
-    table_id: {
+    id: {
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER
@@ -43,10 +52,10 @@ AdminStore.init({
 {
     // Other model options go here
     sequelize, // We need to pass the connection instance
-    modelName: 'AdminStore', // We need to choose the Model Name (Table Name)
+    modelName: 'UserStore', // We need to choose the Model Name (Table Name)
 },
 )
 
-AdminStore.sync()
+UserStore.sync()
 
-module.exports = AdminStore
+module.exports = UserStore

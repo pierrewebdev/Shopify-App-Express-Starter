@@ -18,13 +18,10 @@ class DraftOrder extends Model {
 
 DraftOrder.init({
     //model attributes
-    table_id: {
+    id: {
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER
-    },
-    id: {
-        type: DataTypes.BIGINT(20)
     },
     currency: {
         type: DataTypes.STRING

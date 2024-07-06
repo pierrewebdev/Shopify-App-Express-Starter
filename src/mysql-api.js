@@ -2,21 +2,17 @@ var env = process.env.NODE_ENV;
 var config = require('../config.json')[env];
 
 //initialize the models and create an instance so we can use the static methods in them
-const StoreAdmin = require("../models/storeadmin.js")
+const User = require("../models/user.js")
 const ShopifyStores = require("../models/shopifystore.js")
-const UserStore = require("../models/adminstore.js")
-const DraftOrder = require("../models/draftorder.js")
+const UserStore = require("../models/userstore.js")
+const DraftOrder = require("../models/draftorder.js");
 
 async function findUserForStoreId(store) {
     return UserStores.findOne({where: { store_id: store.table_id }, order: [ ['id', 'DESC'] ], raw: true});
 }
 
-async function findUserByUserShop(userShop) {
-    return Users.findOne({where: {id: userShop.user_id}, raw: true});
-}
-
 async function findUserById(id) {
-    return Users.findOne({where: {id: id}, raw: true});
+    return User.findOne({where: {id: id}, raw: true});
 }
 
 async function getShopifyStoreData(user) {
@@ -66,20 +62,32 @@ async function getStoreByDomain (shop) {
     return await ShopifyStores.findOne({where: {myshopify_domain: shop}, raw: true});
 }
 
-async function updateOrCreateUserRecord (userBody) {
-    return await this.updateOrCreateOnModel(Users, {"email": userBody.email}, userBody);
+async function createUserRecord(userData){
+    return User.createNewUser(userData)
 }
 
-async function updateOrCreateStoreRecord (storeBody) {
-    return await this.updateOrCreateOnModel(ShopifyStores, {"myshopify_domain": storeBody.myshopify_domain}, storeBody);
+async function findOrCreateUserRecord (userBody) {
+    // return await this.updateOrCreateOnModel(Users, {"email": userBody.email}, userBody);
+    return User.findOrCreateUserById(userBody)
 }
 
-async function updateOrCreateUserStoreMapping(userRecord, storeRecord){
-    var obj = {
-        "user_id": userRecord.id,
-        "store_id": storeRecord.table_id
-    };
-    return await this.updateOrCreateOnModel(UserStores, obj, obj);
+async function findOrCreateStoreRecord (storeBody) {
+    return ShopifyStores.findOrCreateStore(storeBody)
+}
+
+async function findOrCreateUserStoreMapping(UserRecord, storeRecord){
+    //But if I don't have a valid id for both tables I can't make a UserStore
+    return UserStore.findOrCreateUserStore(UserRecord, storeRecord)
+}
+
+async function findUserWithStoreId(storeRecord){
+    const foundRecord = UserStore.findOne({
+        where: {
+            store_id: storeRecord.id
+        }
+    })
+
+    return foundRecord.store_admin_id
 }
 
 async function updateOrCreateOnModel (Model, where, newItem) {
@@ -100,14 +108,15 @@ async function updateOrCreateOnModel (Model, where, newItem) {
 
 module.exports = {
     findUserForStoreId,
-    findUserByUserShop,
     findUserById,
     getShopifyStoreData,
     getAllShopifyStoresAssociatedWithUser,
     getAllStores,
     getStoreByDomain,
-    updateOrCreateUserRecord,
-    updateOrCreateStoreRecord,
-    updateOrCreateUserStoreMapping,
-    updateOrCreateOnModel
+   findOrCreateUserRecord,
+   findOrCreateStoreRecord,
+   findOrCreateUserStoreMapping,
+    updateOrCreateOnModel,
+    findUserWithStoreId,
+    createUserRecord
 }

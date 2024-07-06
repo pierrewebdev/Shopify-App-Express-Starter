@@ -46,7 +46,10 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.get('/shopify/auth', installationController.index);
     app.get('/shopify/auth/redirect', installationController.redirect);
 
-    app.get('/dashboard', RequireAuth, () => res.render("index"));
+    app.get('/dashboard', RequireAuth, () => {
+        console.log("YOU DID IT!!!")
+        res.render("index")
+    });
 
     const apiRoutePrefix = '/api/'; // This is so if we do versioning like /api/v1 or /api/v2 
     // const helpers = traits.FunctionTrait

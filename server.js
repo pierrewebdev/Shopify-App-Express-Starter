@@ -25,18 +25,9 @@ app.use(session({
 // app.use(passport.initialize());
 // app.use(passport.session()); 
 
-//Models 
-// var models = require("./models");
-// const { Sequelize, Model, DataTypes, DATE } = require('sequelize');
-//Sync Database 
-// models.sequelize.sync().then(function() {
-//   console.log('Nice! All is looking good');
-// }).catch(function(err) {
-//   console.log(err, "Something went wrong with the Database Update!");
-// });
-
-//Load mysql -- Want to write my own version of this
-//const mysqlAPI = require('./src/mysql-api')(Sequelize, DataTypes, env);
+//Set up Models
+const setupModels = require("./models/set-up")
+setupModels()
 
 //Load Traits 
 const FunctionTrait = require('./traits/functions');

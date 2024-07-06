@@ -174,13 +174,12 @@ module.exports = () => {
                 const shopifyStore = await getShopifyStoreDetails(req.query, accessToken);
                 await saveDetailsToDatabase(shopifyStore, accessToken, req.query);
             
-                return
-                const dbRecord = await functionTrait.getStoreByDomain(shop);    
-                const userShop = await mysqlAPI.findUserForStoreId(dbRecord);
-                const user = await mysqlAPI.findUserByUserShop(userShop);
+                
+                const storeRecord = await mysqlAPI.getStoreByDomain(shop); 
+                const userRecord = await mysqlAPI.findUserWithStoreId(storeRecord);
 
                 req.session.user = {
-                    id: user.id
+                    id: userRecord.id
                 };
 
                 return res.redirect('/dashboard');
@@ -256,15 +255,21 @@ module.exports = () => {
                 "password": await hash('123456', 8)
             };
 
-            console.log("REAL STORE DATA", storeBody)
-            console.log("USER", userBody)
+            // console.log("REAL STORE DATA", storeBody)
+            // console.log("USER", userBody)
 
-            return
+            //Find or Create DB Records using Models
+            const storeRecord = await mysqlAPI.findOrCreateStoreRecord(storeBody);
+            console.log("is this an array", Array.isArray(storeRecord))
+            const userStoreRecord = await mysqlAPI.findUserWithStoreId(storeRecord);
 
-            //=== Have to use my own code here since I changed the Model files
-            var userRecord = await mysqlAPI.updateOrCreateUserRecord(userBody);
-            var storeRecord = await mysqlAPI.updateOrCreateStoreRecord(storeBody);
-            var userStoreRecord = await mysqlAPI.updateOrCreateUserStoreMapping(userRecord, storeRecord);
+            // console.log("STORE RECORD", storeRecord)
+
+            if(!userStoreRecord){
+                //create new admin and then create adminstore record for it
+                const newUserRecord = await mysqlAPI.createUserRecord(userBody)
+                const newUserStoreRecord = await mysqlAPI.findOrCreateUserStoreMapping(storeRecord, newAdminRecord)
+            }
 
             //Any other operations here..just after installing the store
 

@@ -10,22 +10,30 @@ const password = config.password
 const sequelize = new Sequelize(database, username, password, config)
 
 
-class StoreAdmin extends Model {
-    static async findOrCreateAdminById(admin){
-        return StoreAdmin.findOrCreate({
-            where: {id: admin.id},
+class User extends Model {
+    static async findOrCreateUserById(userData){
+        return User.findOrCreate({
+            where: {id: userData.id},
             defaults: {
-                name: admin.name,
-                email: admin.email,
-                password: admin.password
+                name: userData.name,
+                email: userData.email,
+                password: userData.password
             }
+        })
+    }
+
+    static async createNewUser(userData){
+        return User.create({
+            name: userData.name,
+            email: userData.email,
+            password: userData.password
         })
     }
 }
 
-StoreAdmin.init({
+User.init({
     //model attributes
-    table_id: {
+    id: {
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER
@@ -65,28 +73,14 @@ StoreAdmin.init({
 {
     // Other model options go here
     sequelize, // We need to pass the connection instance
-    tableName: 'StoreAdmin', // We need to choose the Model Name (Table Name)
+    tableName: 'User', // We need to choose the Model Name (Table Name)
 },
 )
 
-StoreAdmin.sync()
+User.sync()
 
-module.exports = StoreAdmin
+module.exports = User
 
-/* 
-   async createStoreAdmin(){
-        return await this.create({
-        id: 1,
-        name: "Patrick Pierre",
-        email: "patrick@codethatconverts.com",
-        password: "rootuser",
-        email_verified_at: Date.now(),
-        remember_token: "token",
-        authtoken: "token",
-        createdAt: Date.now(),
-        updatedAt: Date.now()
-    })
-*/
 
 
 

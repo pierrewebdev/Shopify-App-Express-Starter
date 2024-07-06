@@ -13,12 +13,12 @@ const sequelize = new Sequelize(database, username, password, config)
 class ShopifyStore extends Model {
     static async findOrCreateStore(store_data){
         return ShopifyStore.findOrCreate({
-            where: {id: store_data.id},
+            where: {shopify_id: store_data.id},
             defaults: {
                 name: store_data.name,
                 shopify_id: store_data.id,
-                domain: store_data.domain,
-                accessToken: store_data.accessToken,
+                myshopify_domain: store_data.myshopify_domain,
+                access_token: store_data.accessToken,
                 currency: store_data.currency,
                 email: store_data.email,
                 phone: store_data.phone
@@ -42,7 +42,7 @@ This is what the store data looks like:
 
 ShopifyStore.init({
     //model attributes
-    table_id: {
+    id: {
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER
