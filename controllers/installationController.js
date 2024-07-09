@@ -260,7 +260,7 @@ module.exports = () => {
 
             //Find or Create DB Records using Models
             const storeRecord = await mysqlAPI.findOrCreateStoreRecord(storeBody);
-            console.log("is this an array", Array.isArray(storeRecord))
+            console.log("is this an array", storeRecord)
             const userStoreRecord = await mysqlAPI.findUserWithStoreId(storeRecord);
 
             // console.log("STORE RECORD", storeRecord)

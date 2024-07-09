@@ -22,7 +22,8 @@ class ShopifyStore extends Model {
                 currency: store_data.currency,
                 email: store_data.email,
                 phone: store_data.phone
-            }
+            },
+            raw: true
         })
     }
 }
