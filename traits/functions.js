@@ -1,7 +1,11 @@
 var crypto = require('crypto');
+var RequestTrait = require('./requests');
+
 // const nodeCache = require('node-cache');
 // const cacheInstance = new nodeCache();
 module.exports = {
+    
+    //This will come into use later, in case you decide to use app proxies
     verifyProxyRequest: async function (query, clientSecret) {
         var data = new Array();
         var signature = query.signature;
@@ -70,5 +74,91 @@ module.exports = {
             "Content-Type": "application/json",
             "X-Shopify-Access-Token": store.accessToken
         }
+    },
+
+    async saveDetailsToDatabase(shopifyStore, accessToken) {
+        try {
+            const { hash } = require("bcryptjs");
+            var storeBody = {
+                "id": shopifyStore.id,
+                "myshopify_domain": shopifyStore.domain,
+                "name": shopifyStore.name,
+                "accessToken": accessToken,
+                "currency": shopifyStore.currency,
+                "email": shopifyStore.email,
+                "phone": shopifyStore.phone
+            };
+
+            var userBody = {
+                "name": shopifyStore.name,
+                "email": shopifyStore.email,
+                "password": await hash('123456', 8)
+            };
+
+            // console.log("REAL STORE DATA", storeBody)
+            // console.log("USER", userBody)
+
+            //Find or Create DB Records using Models
+            const storeRecord = await mysqlAPI.findOrCreateStoreRecord(storeBody);
+            console.log("is this an array", storeRecord)
+            const userStoreRecord = await mysqlAPI.findUserWithStoreId(storeRecord);
+
+            // console.log("STORE RECORD", storeRecord)
+
+            if(!userStoreRecord){
+                //create new admin and then create adminstore record for it
+                const newUserRecord = await mysqlAPI.createUserRecord(userBody)
+                const newUserStoreRecord = await mysqlAPI.findOrCreateUserStoreMapping(storeRecord, newAdminRecord)
+            }
+
+            //Any other operations here..just after installing the store
+
+            return true;
+        } catch(error) {
+            console.log('error in saving details to database '+error.message);
+        }
+    },
+
+    async getShopifyStoreDetails(query, accessToken) {
+        var endpoint = this.getShopifyAPIURLForStore('shop.json', {"myshopify_domain": query.shop});
+        var headers = this.getShopifyAPIHeadersForStore({"accessToken": accessToken});
+        var response = await RequestTrait.makeAnAPICallToShopify('GET', endpoint, headers);
+
+        if(response.status) 
+            return response.respBody.shop;
+
+        return null;
+    },
+
+
+    async requestAccessTokenFromShopify(query) {
+        var endpoint = `https://${query.shop}/admin/oauth/access_token`;
+        var body = {
+            'client_id': clientId,
+            'client_secret': clientSecret,
+            'code': query.code
+        };
+        var headers = {
+            'Content-Type': 'application/json'
+        };
+
+        var response = await RequestTrait.makeAnAPICallToShopify('POST', endpoint, headers, body);
+        
+        if(response.status) {
+            return response.respBody.access_token;
+        }
+
+        return null;
+    },
+
+    async checkStoreRecordValidity(dbRecord) {
+        if(!dbRecord) { //Using !dbRecord checks for all undefined, null and empty checks
+            return false;
+        }
+
+        var endpoint = this.getShopifyAPIURLForStore('shop.json', dbRecord);
+        var headers = this.getShopifyAPIHeadersForStore(dbRecord);
+        var response = await RequestTrait.makeAnAPICallToShopify('GET', endpoint, headers);
+        return response.status && response.respBody.hasOwnProperty('shop');
     }
 }
