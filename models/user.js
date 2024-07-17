@@ -21,14 +21,6 @@ class User extends Model {
             }
         })
     }
-
-    static async createNewUser(userData){
-        return User.create({
-            name: userData.name,
-            email: userData.email,
-            password: userData.password
-        })
-    }
 }
 
 User.init({
@@ -55,12 +47,9 @@ User.init({
     email_verified_at: {
         type: DataTypes.DATE
     },
-    remember_token: {
-        type: DataTypes.STRING
-    },
-    authtoken: {
-        type: DataTypes.STRING
-    },
+    // authtoken: {
+    //     type: DataTypes.STRING
+    // },
     createdAt: {
         field: 'created_at',
         type: DataTypes.DATE,

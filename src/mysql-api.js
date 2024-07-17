@@ -63,7 +63,7 @@ async function getStoreByDomain (shop) {
 }
 
 async function createUserRecord(userData){
-    return User.createNewUser(userData)
+    return User.create(userData)
 }
 
 async function findOrCreateUserRecord (userBody) {
@@ -71,13 +71,30 @@ async function findOrCreateUserRecord (userBody) {
     return User.findOrCreateUserById(userBody)
 }
 
-async function findOrCreateStoreRecord (storeBody) {
-    return ShopifyStores.findOrCreateStore(storeBody)
+async function findStoreRecord (storeBody) {
+    return ShopifyStores.findOne({
+        where: {shopify_id: storeBody.id}
+    })
 }
 
-async function findOrCreateUserStoreMapping(UserRecord, storeRecord){
+async function createStoreRecord (storeBody) {
+    return ShopifyStores.create({
+        name: storeBody.name,
+        shopify_id: storeBody.id,
+        myshopify_domain: storeBody.myshopify_domain,
+        access_token: storeBody.accessToken,
+        currency: storeBody.currency,
+        email: storeBody.email,
+        phone: storeBody.phone
+    })
+}
+
+async function createUserStoreMapping(userRecord, storeRecord){
     //But if I don't have a valid id for both tables I can't make a UserStore
-    return UserStore.findOrCreateUserStore(UserRecord, storeRecord)
+    return UserStore.create({
+        store_id: storeRecord.id,
+        user_id: userRecord.id
+    })
 }
 
 async function findUserWithStoreId(storeRecord){
@@ -114,8 +131,9 @@ module.exports = {
     getAllStores,
     getStoreByDomain,
    findOrCreateUserRecord,
-   findOrCreateStoreRecord,
-   findOrCreateUserStoreMapping,
+   findStoreRecord,
+   createStoreRecord,
+   createUserStoreMapping,
     updateOrCreateOnModel,
     findUserWithStoreId,
     createUserRecord

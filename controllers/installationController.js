@@ -21,8 +21,6 @@ module.exports = () => {
                     })
                 }
 
-                //console.log("I got up to HMAC VALID LMAO");
-
                 //Show Error message when hmac is not valid
                 const hmacValid = await functionTrait.isRequestFromShopify(req.query, clientSecret);
                 if(!hmacValid){
@@ -36,6 +34,7 @@ module.exports = () => {
                 const dbRecord = await mysqlAPI.getStoreByDomain(shop);
                 const dbValidity = await functionTrait.checkStoreRecordValidity(dbRecord);
 
+
                 //If token is not valid, you redirect to get a new one
                 if(!dbValidity) {
                     const endpoint = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=${accessScopes}&redirect_uri=${redirectUri}`;
@@ -44,6 +43,8 @@ module.exports = () => {
 
                 const userShop = await mysqlAPI.findUserForStoreId(dbRecord);
                 const user = await mysqlAPI.findUserByUserShop(userShop);
+
+                
                 
                 req.session.user = {
                     id: user.id
@@ -119,14 +120,17 @@ module.exports = () => {
                     });
                 }
 
+
                 const shop = req.query.shop;
-                const accessToken = await functionTrait.requestAccessTokenFromShopify(req.query);
+                const accessToken = await functionTrait.requestAccessTokenFromShopify(req.query, clientId, clientSecret);
+
+                console.log("ACCESSTOKEN: " + accessToken)
 
                 //Early return if accessToken doesn't have data in it
                 if(!(accessToken !== null)) return
 
                 const shopifyStore = await functionTrait.getShopifyStoreDetails(req.query, accessToken);
-                await functionTrait.saveDetailsToDatabase(shopifyStore, accessToken, req.query);
+                await functionTrait.saveDetailsToDatabase(shopifyStore, accessToken);
                 
                 const storeRecord = await mysqlAPI.getStoreByDomain(shop); 
                 const userRecord = await mysqlAPI.findUserWithStoreId(storeRecord);

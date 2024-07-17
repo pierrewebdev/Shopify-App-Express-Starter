@@ -1,5 +1,6 @@
 var crypto = require('crypto');
 var RequestTrait = require('./requests');
+var mysqlAPI = require("../src/mysql-api");
 
 // const nodeCache = require('node-cache');
 // const cacheInstance = new nodeCache();
@@ -99,23 +100,28 @@ module.exports = {
             // console.log("USER", userBody)
 
             //Find or Create DB Records using Models
-            const storeRecord = await mysqlAPI.findOrCreateStoreRecord(storeBody);
-            console.log("is this an array", storeRecord)
-            const userStoreRecord = await mysqlAPI.findUserWithStoreId(storeRecord);
+            const storeRecord = await mysqlAPI.findStoreRecord(storeBody);
 
-            // console.log("STORE RECORD", storeRecord)
+            if(!storeRecord){
+                storeRecord = await mysqlAPI.createStoreRecord(storeBody)
+            }
+
+            
+            const userStoreRecord = await mysqlAPI.findUserWithStoreId(storeRecord);
 
             if(!userStoreRecord){
                 //create new admin and then create adminstore record for it
+                console.log("Failed After this ========")
                 const newUserRecord = await mysqlAPI.createUserRecord(userBody)
-                const newUserStoreRecord = await mysqlAPI.findOrCreateUserStoreMapping(storeRecord, newAdminRecord)
+                const newUserStoreRecord = await mysqlAPI.createUserStoreMapping(storeRecord, newAdminRecord)
             }
 
             //Any other operations here..just after installing the store
 
+            console.log("Made it to Return ======")
             return true;
         } catch(error) {
-            console.log('error in saving details to database '+error.message);
+            console.log('error in saving details to database: '+error.message);
         }
     },
 
@@ -131,13 +137,14 @@ module.exports = {
     },
 
 
-    async requestAccessTokenFromShopify(query) {
+    async requestAccessTokenFromShopify(query, clientId, clientSecret) {
         var endpoint = `https://${query.shop}/admin/oauth/access_token`;
         var body = {
             'client_id': clientId,
             'client_secret': clientSecret,
             'code': query.code
         };
+
         var headers = {
             'Content-Type': 'application/json'
         };
