@@ -60,47 +60,6 @@ module.exports = () => {
             }
         },
 
-        // redirect: async function (req, res) {
-        //     try {
-        //         if(req.query.hasOwnProperty('shop') && req.query.hasOwnProperty('code')) {
-        //             var hmacValid = await functionTrait.isRequestFromShopify(req.query, clientSecret);
-        //             if(hmacValid) {
-        //                 var shop = req.query.shop;
-        //                 var accessToken = await requestAccessTokenFromShopify(req.query);
-        //                 if(accessToken !== null) {
-        //                     var shopifyStore = await getShopifyStoreDetails(req.query, accessToken);
-        //                     await saveDetailsToDatabase(shopifyStore, accessToken, req.query);
-                        
-        //                     var dbRecord = await functionTrait.getStoreByDomain(shop);    
-        //                     var userShop = await mysqlAPI.findUserForStoreId(dbRecord);
-        //                     var user = await mysqlAPI.findUserByUserShop(userShop);
-
-        //                     if(req.session.user != undefined && req.session.user != null)
-        //                         req.session.destroy();
-        //                     req.session.user = {
-        //                         id: user.id
-        //                     };
-
-        //                     return res.redirect('/dashboard');
-        //                 }
-        //             }
-        //         } 
-
-        //         return res.json({
-        //             'status': false, 
-        //             'message': 'Invalid request.',
-        //             'request': req.query
-        //         });
-        //     } catch (error) {
-        //         return res.json({
-        //             data: null,
-        //             count: 0,
-        //             query: req.query,
-        //             message: error.message
-        //         })
-        //     }
-        // },
-
         redirect: async function (req, res) {
             try {
                 if(!(req.query.hasOwnProperty('shop') && req.query.hasOwnProperty('code'))){
@@ -124,8 +83,6 @@ module.exports = () => {
                 const shop = req.query.shop;
                 const accessToken = await functionTrait.requestAccessTokenFromShopify(req.query, clientId, clientSecret);
 
-                console.log("ACCESSTOKEN: " + accessToken)
-
                 //Early return if accessToken doesn't have data in it
                 if(!(accessToken !== null)) return
 
@@ -134,6 +91,8 @@ module.exports = () => {
                 
                 const storeRecord = await mysqlAPI.getStoreByDomain(shop); 
                 const userRecord = await mysqlAPI.findUserWithStoreId(storeRecord);
+
+                console.log("USER RECORD FROM CONTROLLER", userRecord)
 
                 req.session.user = {
                     id: userRecord.id

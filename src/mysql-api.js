@@ -4,11 +4,11 @@ var config = require('../config.json')[env];
 //initialize the models and create an instance so we can use the static methods in them
 const User = require("../models/user.js")
 const ShopifyStores = require("../models/shopifystore.js")
-const UserStore = require("../models/userstore.js")
-const DraftOrder = require("../models/draftorder.js");
+const UserStores = require("../models/userstore.js")
+//const DraftOrder = require("../models/draftorder.js");
 
 async function findUserForStoreId(store) {
-    return UserStores.findOne({where: { store_id: store.table_id }, order: [ ['id', 'DESC'] ], raw: true});
+    return UserStores.findOne({where: { store_id: store.id }, order: [ ['id', 'DESC'] ], raw: true});
 }
 
 async function findUserById(id) {
@@ -23,7 +23,8 @@ async function getShopifyStoreData(user) {
 
     if(userStoreData !== null) {
         var storeData = await ShopifyStores.findOne({
-            where: { "table_id": userStoreData.store_id }
+            where: { "id": userStoreData.store_id },
+            raw: true
         })
         return storeData;
     }
@@ -44,7 +45,7 @@ async function getAllShopifyStoresAssociatedWithUser(user) {
         }
 
         var stores = await ShopifyStores.findAll({
-            where: {"table_id": storeIds}
+            where: {"id": storeIds}
         });
 
         return stores;
@@ -63,7 +64,11 @@ async function getStoreByDomain (shop) {
 }
 
 async function createUserRecord(userData){
-    return User.create(userData)
+    return User.create({
+        name: userData.name,
+        email: userData.email,
+        password: userData.password
+    })
 }
 
 async function findOrCreateUserRecord (userBody) {
@@ -89,22 +94,20 @@ async function createStoreRecord (storeBody) {
     })
 }
 
-async function createUserStoreMapping(userRecord, storeRecord){
+async function createUserStoreMapping(storeRecord,userRecord){
     //But if I don't have a valid id for both tables I can't make a UserStore
-    return UserStore.create({
+    return UserStores.create({
         store_id: storeRecord.id,
         user_id: userRecord.id
     })
 }
 
 async function findUserWithStoreId(storeRecord){
-    const foundRecord = UserStore.findOne({
+    return UserStores.findOne({
         where: {
             store_id: storeRecord.id
         }
     })
-
-    return foundRecord.store_admin_id
 }
 
 async function updateOrCreateOnModel (Model, where, newItem) {
@@ -116,9 +119,6 @@ async function updateOrCreateOnModel (Model, where, newItem) {
          // Found an item, update it
         return Model.update(newItem, {where: where} ).then(function (item) { console.log(item); return {item: item, created: false} }) ;
     });
-
-    // console.log('dbOperation');
-    // console.log(dbOperation);
 
     return Model.findOne({where: where, raw: true});
 }

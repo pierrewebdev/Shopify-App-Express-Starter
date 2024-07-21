@@ -111,14 +111,14 @@ module.exports = {
 
             if(!userStoreRecord){
                 //create new admin and then create adminstore record for it
-                console.log("Failed After this ========")
                 const newUserRecord = await mysqlAPI.createUserRecord(userBody)
-                const newUserStoreRecord = await mysqlAPI.createUserStoreMapping(storeRecord, newAdminRecord)
+                const newUserStoreRecord = await mysqlAPI.createUserStoreMapping(storeRecord, newUserRecord)
+
+                console.log("USERSTORE Record", newUserStoreRecord)
             }
 
             //Any other operations here..just after installing the store
 
-            console.log("Made it to Return ======")
             return true;
         } catch(error) {
             console.log('error in saving details to database: '+error.message);

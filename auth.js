@@ -1,5 +1,6 @@
 
 const jwt = require('jsonwebtoken');
+const mysqlAPI = require("./src/mysql-api");
 
 module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
 
@@ -46,8 +47,14 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.get('/shopify/auth', installationController.index);
     app.get('/shopify/auth/redirect', installationController.redirect);
 
-    app.get('/dashboard', RequireAuth, () => {
-        console.log("YOU DID IT!!!")
+    app.get('/dashboard', RequireAuth, async (req, res) => {
+        const userId = req.session.user.id
+        const userRecord = await mysqlAPI.findUserById(userId)
+        const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
+
+        console.log("USER RECORD", userRecord)
+        console.log("Shopify Store", shopifyStore)
+
         res.render("index")
     });
 

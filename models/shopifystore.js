@@ -99,6 +99,4 @@ ShopifyStore.init({
 },
 )
 
-ShopifyStore.sync()
-
 module.exports = ShopifyStore

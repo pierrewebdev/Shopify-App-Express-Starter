@@ -11,14 +11,28 @@ app.use(cors());
 
 //var passport = require('passport');
 var session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 var env = require('dotenv').config(); 
 env = env.parsed;
+
+var dbEnv = env.NODE_ENV || "development";
+const dbConfig = require('./config.json')[dbEnv];
+
+const sessionOptions = {
+    host: dbConfig.host,
+    port: dbConfig.port,
+    user: dbConfig.username,
+    password: dbConfig.password,
+    database: dbConfig.database
+};
+const sessionStore = new MySQLStore(sessionOptions);
 
 app.use( express.urlencoded({ extended: true }) );
 app.use(express.json());
 // For Passport 
 app.use(session({
-  secret: 'someverylargestringthatwecannotsimplyguess'
+  secret: 'someverylargestringthatwecannotsimplyguess',
+  store: sessionStore
 })); 
 
 // session secret 

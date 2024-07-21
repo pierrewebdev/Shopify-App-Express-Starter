@@ -20,7 +20,7 @@ class storeValidityHandler {
                 }
             }
         } catch (error) {
-            console.log('In check store validity function');
+
             console.log(error.message);
         }
     }

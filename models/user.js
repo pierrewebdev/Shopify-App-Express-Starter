@@ -11,14 +11,9 @@ const sequelize = new Sequelize(database, username, password, config)
 
 
 class User extends Model {
-    static async findOrCreateUserById(userData){
-        return User.findOrCreate({
-            where: {id: userData.id},
-            defaults: {
-                name: userData.name,
-                email: userData.email,
-                password: userData.password
-            }
+    static async findUserById(userData){
+        return User.findOne({
+            where: {id: userData.id}
         })
     }
 }
