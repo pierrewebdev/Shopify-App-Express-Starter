@@ -92,8 +92,6 @@ module.exports = () => {
                 const storeRecord = await mysqlAPI.getStoreByDomain(shop); 
                 const userRecord = await mysqlAPI.findUserWithStoreId(storeRecord);
 
-                console.log("USER RECORD FROM CONTROLLER", userRecord)
-
                 req.session.user = {
                     id: userRecord.id
                 };

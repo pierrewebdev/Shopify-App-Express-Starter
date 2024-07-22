@@ -1,12 +1,11 @@
 
 const jwt = require('jsonwebtoken');
-const mysqlAPI = require("./src/mysql-api");
 
 module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
 
     // var dashboardController = require('./controllers/dashboardController')(/*mysqlAPI,*/ traits);
     // var storeController = require('./controllers/storeController')(/*mysqlAPI,*/ traits);
-    const installationController = require('./controllers/installationController');
+    const installationController = require('./controllers/installationController')(/*mysqlAPI,*/);
     const dashboardController = require('./controllers/dashboardController')
     
     /** Do whatever with this middleware */
@@ -49,15 +48,10 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.get('/shopify/auth/redirect', installationController.redirect);
 
     app.get('/dashboard', RequireAuth, async (req, res) => {
-        //Get info on current user of app
-        const userId = req.session.user.id
-        const userRecord = await mysqlAPI.findUserById(userId)
-        const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
-
-        console.log("USER RECORD", userRecord)
-        console.log("Shopify Store", shopifyStore)
-
-        res.render("index")
+        console.log(await dashboardController)
+        res.json({
+            message: "done"
+        })
     });
 
     const apiRoutePrefix = '/api/'; // This is so if we do versioning like /api/v1 or /api/v2 

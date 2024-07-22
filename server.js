@@ -58,15 +58,6 @@ app.set('etag', false);
 
 require('./auth.js')(app)
 
-app.get('/', (req, res) => {
-  // res.json({
-  //   "status": true,
-  //   "message": "Hello World" 
-  // }).status(200);
-
-  res.render("index")
-});
-
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

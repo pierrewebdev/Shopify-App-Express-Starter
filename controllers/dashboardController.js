@@ -1,14 +1,22 @@
-const nodeCache = require('node-cache');
-const myCache = new nodeCache();
 
-module.exports = (mysqlAPI, traits) => {
-  const functionTrait = traits.FunctionTrait;
-  const requestTrait = traits.RequestTrait;
+module.exports = () => {
+  const nodeCache = require('node-cache');
+  const myCache = new nodeCache();
+  const mysqlAPI = require("../src/mysql-api");
+  const functionTrait = require('../traits/functions');
+  const requestTrait = require('../traits/requests');
 
   return {
     index: async function (req, res) {
       try {
-        return res.json({'status': true, 'message': 'In dashboard api', 'account': req.session.user});
+        const userId = req.session.user.id
+        const userRecord = await mysqlAPI.findUserById(userId)
+        const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
+
+        return res.render("index", {
+            storeName: shopifyStore.name   
+        })
+        
       } catch (error) {
         return res.json({
           "status": false,
