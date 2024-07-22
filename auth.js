@@ -6,7 +6,8 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
 
     // var dashboardController = require('./controllers/dashboardController')(/*mysqlAPI,*/ traits);
     // var storeController = require('./controllers/storeController')(/*mysqlAPI,*/ traits);
-    var installationController = require('./controllers/installationController')(/*mysqlAPI,*/);
+    const installationController = require('./controllers/installationController');
+    const dashboardController = require('./controllers/dashboardController')
     
     /** Do whatever with this middleware */
     //apiAuth is not currently being used
@@ -48,6 +49,7 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.get('/shopify/auth/redirect', installationController.redirect);
 
     app.get('/dashboard', RequireAuth, async (req, res) => {
+        //Get info on current user of app
         const userId = req.session.user.id
         const userRecord = await mysqlAPI.findUserById(userId)
         const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)

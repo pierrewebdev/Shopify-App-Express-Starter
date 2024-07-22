@@ -29,15 +29,13 @@ const sessionStore = new MySQLStore(sessionOptions);
 
 app.use( express.urlencoded({ extended: true }) );
 app.use(express.json());
-// For Passport 
+
+// Sets up a persistent session for user in Sessions DB Table 
 app.use(session({
   secret: 'someverylargestringthatwecannotsimplyguess',
   store: sessionStore
 })); 
 
-// session secret 
-// app.use(passport.initialize());
-// app.use(passport.session()); 
 
 //Set up Models
 const setupModels = require("./models/set-up")

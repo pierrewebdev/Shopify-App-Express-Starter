@@ -77,6 +77,7 @@ module.exports = {
         }
     },
 
+    //used to save data when someone is first installing app
     async saveDetailsToDatabase(shopifyStore, accessToken) {
         try {
             const { hash } = require("bcryptjs");
@@ -95,9 +96,6 @@ module.exports = {
                 "email": shopifyStore.email,
                 "password": await hash('123456', 8)
             };
-
-            // console.log("REAL STORE DATA", storeBody)
-            // console.log("USER", userBody)
 
             //Find or Create DB Records using Models
             const storeRecord = await mysqlAPI.findStoreRecord(storeBody);
