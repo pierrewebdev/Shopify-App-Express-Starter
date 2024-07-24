@@ -6,7 +6,7 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     // var dashboardController = require('./controllers/dashboardController')(/*mysqlAPI,*/ traits);
     // var storeController = require('./controllers/storeController')(/*mysqlAPI,*/ traits);
     const installationController = require('./controllers/installationController')(/*mysqlAPI,*/);
-    const dashboardController = require('./controllers/dashboardController')
+    const dashboardController = require('./controllers/dashboardController')()
     
     /** Do whatever with this middleware */
     //apiAuth is not currently being used
@@ -47,12 +47,7 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.get('/shopify/auth', installationController.index);
     app.get('/shopify/auth/redirect', installationController.redirect);
 
-    app.get('/dashboard', RequireAuth, async (req, res) => {
-        console.log(await dashboardController)
-        res.json({
-            message: "done"
-        })
-    });
+    app.get('/dashboard', RequireAuth, dashboardController.index);
 
     const apiRoutePrefix = '/api/'; // This is so if we do versioning like /api/v1 or /api/v2 
     // const helpers = traits.FunctionTrait

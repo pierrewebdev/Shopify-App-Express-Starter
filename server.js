@@ -6,6 +6,21 @@ var cors = require('cors');
 const port = 80;
 const bodyParser = require('body-parser'); // middleware
 
+// set ejs view cache
+app.set('view cache', false);
+app.set('views', `${__dirname}/pages/views`);
+app.set('view engine', 'ejs');
+app.set('etag', false);
+
+//Load CSS Assets into ejs layout file
+const path = require('path')
+app.use(express.static(path.join(__dirname, "pages", "assets")))
+const expressLayouts = require('express-ejs-layouts')
+app.use(expressLayouts)
+
+console.log("PATH", path.join(__dirname, "pages", "assets"))
+
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
@@ -45,12 +60,6 @@ setupModels()
 const FunctionTrait = require('./traits/functions');
 const RequestTrait = require('./traits/requests');
 const traits = {FunctionTrait, RequestTrait}
-
-// set ejs view cache
-app.set('view cache', true);
-app.set('views', `${__dirname}/pages/views`);
-app.set('view engine', 'ejs');
-app.set('etag', false);
 
 //load passport strategies 
 //require('./passport/passport.js')(passport, models.user);
