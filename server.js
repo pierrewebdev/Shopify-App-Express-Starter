@@ -12,14 +12,9 @@ app.set('views', `${__dirname}/pages/views`);
 app.set('view engine', 'ejs');
 app.set('etag', false);
 
-//Load CSS Assets into ejs layout file
-const path = require('path')
-app.use(express.static(path.join(__dirname, "pages", "assets")))
+//set up ejs layout file
 const expressLayouts = require('express-ejs-layouts')
 app.use(expressLayouts)
-
-console.log("PATH", path.join(__dirname, "pages", "assets"))
-
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
