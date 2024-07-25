@@ -1,1 +1,59 @@
-<h1> Hello <%= storeName %> how can I help you today </h1>
+<section class = "full-width">
+    <header>
+        <h1> Invoice Printer </h1>
+        <h2>Inspired by Shopify's <a href = "https://help.shopify.com/en/manual/orders/printing-orders/order-printer">Order Printer</a></h2>
+    </header>
+</section>
+
+<!-- Tabs-->
+<section>
+    <div class="columns has-sections">
+        <ul class="tabs">
+            <li class="active"><a href="#">All</a></li>
+            <li><a href="#">Unfulfilled</a></li>
+            <li><a href="#">Fulfilled</a></li>
+        </ul>
+    </div>
+</section>
+
+<!--Table-->
+<section>
+    <table>
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Payment Status</th>
+                <th>Fulfillment Status</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b>#1011</b></td>
+                <td>May 25th at 1:24 am</td>
+                <td>Patrick Pierre</td>
+                <td>Refunded</td>
+                <td>Unfulfilled</td>
+                <td>$376.16</td>
+            </tr>
+            <tr>
+                <td><b>#1012</b></td>
+                <td>May 25th at 1:24 am</td>
+                <td>Patrick Pierre</td>
+                <td>Paid</td>
+                <td>Unfulfilled</td>
+                <td>$276.24</td>
+            </tr>
+            <tr>
+                <td><b>#1013</b></td>
+                <td>May 25th at 1:24 am</td>
+                <td>Patrick Pierre</td>
+                <td>Refunded</td>
+                <td>Unfulfilled</td>
+                <td>$300.74</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
