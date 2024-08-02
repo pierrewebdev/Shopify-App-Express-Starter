@@ -69,6 +69,10 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
         res.sendFile(`${__dirname}/pages/assets/uptown.css`)
     })
 
+    app.get("/assets/invoice.css", (req,res) => {
+        res.sendFile(`${__dirname}/pages/assets/invoice.css`)
+    })
+
     /* route: /api/get-single-order */
     app.get(apiRoutePrefix + 'get-single-order', async (req, res) => {
         /* Pseudocode 
