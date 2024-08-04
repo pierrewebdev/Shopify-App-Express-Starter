@@ -11,9 +11,7 @@ const sequelize = new Sequelize(database, username, password, config)
 
 
 class DraftOrder extends Model {
-    getStoreDomain(){
-        return this.myshopify_domain
-    }
+    
 }
 
 DraftOrder.init({
@@ -23,12 +21,20 @@ DraftOrder.init({
         primaryKey: true,
         type: DataTypes.INTEGER
     },
+    draft_order_id: {
+        type: DataTypes.INTEGER,
+        notEmpty: true
+    },
     currency: {
         type: DataTypes.STRING
     },
     order_name: {
         type: DataTypes.STRING,
         notEmpty: true
+    },
+    order_line_items: {
+        type: DataTypes.TEXT,
+        
     },
     shipping_address: {
         type: DataTypes.TEXT('medium')
@@ -43,6 +49,9 @@ DraftOrder.init({
         type: DataTypes.FLOAT
     },
     subtotal_price: {
+        type: DataTypes.FLOAT
+    },
+    total_tax: {
         type: DataTypes.FLOAT
     },
     customer: {

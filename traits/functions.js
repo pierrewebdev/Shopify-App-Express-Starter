@@ -73,7 +73,7 @@ module.exports = {
     getShopifyAPIHeadersForStore(store) {
         return {
             "Content-Type": "application/json",
-            "X-Shopify-Access-Token": store.accessToken
+            "X-Shopify-Access-Token": store.access_token
         }
     },
 

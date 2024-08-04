@@ -3,7 +3,7 @@ const User = require("./user.js")
 const ShopifyStore = require("./shopifystore.js")
 const { Sequelize } = require("sequelize")
 const UserStore = require("./userstore.js")
-//const DraftOrder = require("./draftorder.js")
+const DraftOrder = require("./draftorder.js")
 
 const appEnvironment = process.env.NODE_ENV || "development";
 const config = require('../config.json')[appEnvironment];
@@ -29,9 +29,12 @@ async function setupModels(){
         otherKey: 'user_id'
     })
 
+    ShopifyStore.hasMany(DraftOrder)
+
     User.sync()
     ShopifyStore.sync()
     UserStore.sync()
+    DraftOrder.sync()
 }
 
 module.exports = setupModels
