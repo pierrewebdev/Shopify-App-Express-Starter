@@ -134,6 +134,27 @@ module.exports = {
         return null;
     },
 
+    verifyWebhookRequest: async function (req, clientSecret) {
+        try {
+            let shopifyApiSecret = clientSecret;
+
+            let hmac = req.headers["x-shopify-hmac-sha256"];
+            const message = req.rawBody; //Set in server.js express.json() function
+            const generatedHash = crypto
+                .createHmac("sha256", shopifyApiSecret)
+                .update(message)
+                .digest("base64");
+            
+            const signatureOk = crypto.timingSafeEqual(
+                Buffer.from(generatedHash),
+                Buffer.from(hmac)
+            );
+            return {status: true, okay: signatureOk};    
+        } catch (error) {
+            return {status: false, okay: false, error: error.message}
+        }
+    },
+
 
     async requestAccessTokenFromShopify(query, clientId, clientSecret) {
         var endpoint = `https://${query.shop}/admin/oauth/access_token`;

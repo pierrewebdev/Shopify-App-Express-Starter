@@ -38,7 +38,12 @@ const sessionOptions = {
 const sessionStore = new MySQLStore(sessionOptions);
 
 app.use( express.urlencoded({ extended: true }) );
-app.use(express.json());
+app.use(express.json({
+  limit: '10mb',
+	verify: (req, _res, buf) => {
+	  req.rawBody = buf; //rawBody is needed for getting the "raw" requests that we receive. This is used for validating Shopify webhooks. Check webhooksController.js
+	},
+}));
 
 // Sets up a persistent session for user in Sessions DB Table 
 app.use(session({

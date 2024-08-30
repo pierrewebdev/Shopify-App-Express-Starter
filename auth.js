@@ -6,7 +6,8 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     // var dashboardController = require('./controllers/dashboardController')(/*mysqlAPI,*/ traits);
     // var storeController = require('./controllers/storeController')(/*mysqlAPI,*/ traits);
     const installationController = require('./controllers/installationController')(/*mysqlAPI,*/);
-    const dashboardController = require('./controllers/dashboardController')()
+    const dashboardController = require('./controllers/dashboardController')();
+    const webhooksController = require('./controllers/webhooksController')();
     
     /** Do whatever with this middleware */
     //apiAuth is not currently being used
@@ -49,7 +50,12 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.get('/shopify/auth/redirect', installationController.redirect);
 
     app.get('/dashboard', RequireAuth, dashboardController.index);
-    app.get('/invoice/:draft_id', RequireAuth, dashboardController.invoice)
+    app.get('/invoice/:draft_id', RequireAuth, dashboardController.invoice);
+
+    //GDPR webhooks
+    app.post('/gdpr/customer_data_delete', webhooksController.deleteCustomerData);
+    app.post('/gdpr/customer_data_request', webhooksController.getCustomerData);
+    app.post('/shop_data_delete', webhooksController.shopDataDelete);
 
     const apiRoutePrefix = '/api/'; // This is so if we do versioning like /api/v1 or /api/v2 
 
