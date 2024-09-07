@@ -46,18 +46,18 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
 
     // ====================== Main App Routes ====================== //
 
-    app.get('/shopify/auth', installationController.index);
-    app.get('/shopify/auth/redirect', installationController.redirect);
-
-    app.get('/dashboard', RequireAuth, dashboardController.index);
-    app.get('/invoice/:draft_id', RequireAuth, dashboardController.invoice);
-
     //GDPR webhooks
     app.post('/gdpr/customer_data_delete', webhooksController.deleteCustomerData);
     app.post('/gdpr/customer_data_request', webhooksController.getCustomerData);
     app.post('/shop_data_delete', webhooksController.shopDataDelete);
 
-    const apiRoutePrefix = '/api/'; // This is so if we do versioning like /api/v1 or /api/v2 
+    //App Installation Routes
+    app.get('/shopify/auth', installationController.index);
+    app.get('/shopify/auth/redirect', installationController.redirect);
+
+    // App Dashboard Routes
+    app.get('/dashboard', RequireAuth, dashboardController.index);
+    app.get('/invoice/:draft_id', RequireAuth, dashboardController.invoice);
 
     app.get("/assets/uptown.css", (req,res) => {
         res.sendFile(`${__dirname}/pages/assets/uptown.css`)
@@ -65,31 +65,5 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
 
     app.get("/assets/invoice.css", (req,res) => {
         res.sendFile(`${__dirname}/pages/assets/invoice.css`)
-    })
-
-    /* route: /api/get-single-order */
-    const mysqlAPI = require("./src/mysql-api");
-    const helpers = require('./traits/functions');
-    const shopifyAPI = require('./traits/requests').makeAnAPICallToShopify
-
-    app.get(apiRoutePrefix + 'draft-orders', async (req, res) => {
-        /* Pseudocode 
-          1. Make a single API Request to Shopify
-          2. Return the json from the request
-        */
-
-    const userId = req.session.user.id
-    const userRecord = await mysqlAPI.findUserById(userId)
-    const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
-
-    const domain = "appless-wishlist-demo-store.myshopify.com"
-
-    const headers = helpers.getShopifyAPIHeadersForStore(shopifyStore);
-    const endpoint = helpers.getShopifyAPIURLForStore(`draft_orders.json`, shopifyStore)
-
-    console.log("HEADERS",headers, "\n\n", "ENDPOINT", endpoint)
-    const response = await shopifyAPI("GET", endpoint, headers)
-
-    res.json(response)
     })
 }

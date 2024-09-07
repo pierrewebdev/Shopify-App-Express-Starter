@@ -5,7 +5,7 @@ var config = require('../config.json')[env];
 const User = require("../models/user.js")
 const ShopifyStores = require("../models/shopifystore.js")
 const UserStores = require("../models/userstore.js")
-//const DraftOrder = require("../models/draftorder.js");
+const DraftOrder = require("../models/draftorder.js")
 
 async function findUserForStoreId(store) {
     return UserStores.findOne({where: { store_id: store.id }, order: [ ['id', 'DESC'] ], raw: true});
