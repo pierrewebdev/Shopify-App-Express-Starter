@@ -87,6 +87,7 @@ module.exports = () => {
                 if(!(accessToken !== null)) return
 
                 const shopifyStore = await functionTrait.getShopifyStoreDetails(req.query, accessToken);
+
                 await functionTrait.saveDetailsToDatabase(shopifyStore, accessToken);
                 
                 const storeRecord = await mysqlAPI.getStoreByDomain(shop); 

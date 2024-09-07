@@ -73,7 +73,7 @@ module.exports = {
     getShopifyAPIHeadersForStore(store) {
         return {
             "Content-Type": "application/json",
-            "X-Shopify-Access-Token": store.access_token
+            "X-Shopify-Access-Token": store.accessToken
         }
     },
 
@@ -81,6 +81,7 @@ module.exports = {
     async saveDetailsToDatabase(shopifyStore, accessToken) {
         try {
             const { hash } = require("bcryptjs");
+            
             var storeBody = {
                 "id": shopifyStore.id,
                 "myshopify_domain": shopifyStore.domain,
@@ -98,7 +99,7 @@ module.exports = {
             };
 
             //Find or Create DB Records using Models
-            const storeRecord = await mysqlAPI.findStoreRecord(storeBody);
+            let storeRecord = await mysqlAPI.findStoreRecord(storeBody);
 
             if(!storeRecord){
                 storeRecord = await mysqlAPI.createStoreRecord(storeBody)
@@ -112,7 +113,6 @@ module.exports = {
                 const newUserRecord = await mysqlAPI.createUserRecord(userBody)
                 const newUserStoreRecord = await mysqlAPI.createUserStoreMapping(storeRecord, newUserRecord)
 
-                console.log("USERSTORE Record", newUserStoreRecord)
             }
 
             //Any other operations here..just after installing the store
@@ -127,6 +127,8 @@ module.exports = {
         var endpoint = this.getShopifyAPIURLForStore('shop.json', {"myshopify_domain": query.shop});
         var headers = this.getShopifyAPIHeadersForStore({"accessToken": accessToken});
         var response = await RequestTrait.makeAnAPICallToShopify('GET', endpoint, headers);
+
+        console.log("HEADERS",headers)
 
         if(response.status) 
             return response.respBody.shop;
