@@ -36,12 +36,6 @@ DraftOrder.init({
         type: DataTypes.TEXT,
         
     },
-    shipping_address: {
-        type: DataTypes.TEXT('medium')
-    },
-    billing_address: {
-        type: DataTypes.TEXT('medium')
-    },
     invoice_url: {
         type: DataTypes.TEXT('medium')
     },
@@ -54,17 +48,7 @@ DraftOrder.init({
     total_tax: {
         type: DataTypes.FLOAT
     },
-    customer: {
-        type: DataTypes.TEXT('long')
-    },
-    store_id: {
-        type: DataTypes.INTEGER,
-        notEmpty: true
-    },
     status: {
-        type: DataTypes.STRING
-    },
-    draf_order_created_at: {
         type: DataTypes.STRING
     },
     createdAt: {

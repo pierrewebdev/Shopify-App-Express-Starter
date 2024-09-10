@@ -23,10 +23,8 @@ module.exports = () => {
 
             try {
                 const orderRequest = await shopifyAPI("GET",endpoint, headers)
-                const draftOrders = orderRequest
-
-                console.log("DRAFT ORDER", draftOrders)
-                res.send(draftOrders.respBody)
+                const draftOrders = orderRequest.respBody
+                res.send(draftOrders)
 
             } catch (error) {
                 console.error(`There was an error with pulling the draft orders \n ${error}`)

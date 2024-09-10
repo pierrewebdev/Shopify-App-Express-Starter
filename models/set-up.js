@@ -29,7 +29,13 @@ async function setupModels(){
         otherKey: 'user_id'
     })
 
-    ShopifyStore.hasMany(DraftOrder)
+    ShopifyStore.hasMany(DraftOrder, {
+        foreignKey: "store_id"
+    })
+    
+    DraftOrder.belongsTo(ShopifyStore, {
+        foreignKey: "store_id"
+    })
 
     User.sync()
     ShopifyStore.sync()
