@@ -7,6 +7,7 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     // var storeController = require('./controllers/storeController')(/*mysqlAPI,*/ traits);
     const installationController = require('./controllers/installationController')(/*mysqlAPI,*/);
     const dashboardController = require('./controllers/dashboardController')();
+    const draftorderController = require('./controllers/draftorderController')();
     const webhooksController = require('./controllers/webhooksController')();
     
     /** Do whatever with this middleware */
@@ -55,7 +56,7 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.get('/shopify/auth', installationController.index);
     app.get('/shopify/auth/redirect', installationController.redirect);
 
-    // App Dashboard Routes
+    // Dashboard Routes
     app.get('/dashboard', RequireAuth, dashboardController.index);
     app.get('/invoice/:draft_id', RequireAuth, dashboardController.invoice);
 
@@ -66,4 +67,8 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.get("/assets/invoice.css", (req,res) => {
         res.sendFile(`${__dirname}/pages/assets/invoice.css`)
     })
+
+    //Draft Order Routes
+    app.get("/get-draft-orders" , draftorderController.pullAllDraftOrders)
+
 }

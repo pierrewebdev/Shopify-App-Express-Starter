@@ -3,7 +3,7 @@ module.exports = (mysqlAPI, traits) => {
   const requestTrait = traits.RequestTrait;
 
   async function saveCollectionsForStore(store, type) {
-    var headers = functionTrait.getShopifyAPIHeadersForStore(store);
+    var headers = functionTrait.getShopifyAPIHeadersForStore(store.access_token);
     var since_id = null;
     var collections = null;
     do {
@@ -31,7 +31,7 @@ module.exports = (mysqlAPI, traits) => {
   }
 
   async function saveLocationsForStore(store) {
-    var headers = functionTrait.getShopifyAPIHeadersForStore(store);
+    var headers = functionTrait.getShopifyAPIHeadersForStore(store.access_token);
     var since_id = null;
     var locations = null;
     do {
@@ -72,7 +72,7 @@ module.exports = (mysqlAPI, traits) => {
           for await(var store of stores) {
             try {
               var since_id = null;
-              var headers = functionTrait.getShopifyAPIHeadersForStore(store);
+              var headers = functionTrait.getShopifyAPIHeadersForStore(store.access_token);
               var products = null;
               do {
                 var sinceIdPrefix = since_id !== null ? '?since_id='+since_id : '';
@@ -123,7 +123,7 @@ module.exports = (mysqlAPI, traits) => {
           for await(var store of stores) {
             try {
               var since_id = null;
-              var headers = functionTrait.getShopifyAPIHeadersForStore(store);
+              var headers = functionTrait.getShopifyAPIHeadersForStore(store.access_token);
               var orders = null;
               do {
                 const respFields = [ //I have to do it because Shopify won't give me protected data access
@@ -241,7 +241,7 @@ module.exports = (mysqlAPI, traits) => {
     getLiveThemeForStore: async function (req, res) {
       const store = req.body.store;
       var endpoint = functionTrait.getShopifyAPIURLForStore('themes.json', store);
-      var headers = functionTrait.getShopifyAPIHeadersForStore(store);
+      var headers = functionTrait.getShopifyAPIHeadersForStore(store.access_token);
       var response = await requestTrait.makeAnAPICallToShopify('GET', endpoint, headers);
       if(response.status) {
         for(var i in response.respBody.themes) {
@@ -265,7 +265,7 @@ module.exports = (mysqlAPI, traits) => {
 
         var scriptEndpoint = functionTrait.getShopifyAPIURLForStore('themes/'+theme.id+'/assets.json?'+scriptAsset, store);
         var homePageEndpoint = functionTrait.getShopifyAPIURLForStore('themes/'+theme.id+'/assets.json?'+homepageBlockAsset, store);
-        var headers = functionTrait.getShopifyAPIHeadersForStore(store);
+        var headers = functionTrait.getShopifyAPIHeadersForStore(store.access_token);
         
         returnVal.scriptResponse = await requestTrait.makeAnAPICallToShopify('GET', scriptEndpoint, headers);
         returnVal.homePageResponse = await requestTrait.makeAnAPICallToShopify('GET', homePageEndpoint, headers);

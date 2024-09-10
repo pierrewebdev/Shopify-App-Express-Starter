@@ -8,7 +8,7 @@ module.exports = () => {
     const apiEndpoint = helperMethods.getShopifyAPIURLForStore
 
     return {
-        pullAllDraftOrders: async function (req, resp) {
+        pullAllDraftOrders: async function (req, res) {
             //Make a request to Shopify API to pull all draft orders and then use the draftorder Model to store them in the db
 
             const userId = req.session.user.id
@@ -16,10 +16,22 @@ module.exports = () => {
             const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
 
             //API Request for draft orders
-            const headers = getApIHeaders(shopifyStore);
+            const headers = getApIHeaders(shopifyStore.access_token);
             const endpoint = apiEndpoint(`draft_orders.json`, shopifyStore)
+            console.log(shopifyStore)
 
-            const draftOrders = shopifyAPI(endpoint, headers)
+            try {
+                const orderRequest = await shopifyAPI(endpoint, headers)
+                const draftOrders = orderRequest
+
+                console.log("DRAFT ORDER \n", draftOrders)
+
+            } catch (error) {
+                console.error(`There was an error with pulling the draft orders \n ${error}`)
+
+            } finally{
+                res.json({message: "Success"})
+            }
 
         }
     }

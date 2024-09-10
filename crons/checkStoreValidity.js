@@ -27,7 +27,7 @@ class storeValidityHandler {
 
     async checkValidityForStore(store) {
         var endpoint = this.FunctionTrait.getShopifyAPIURLForStore('shop.json', store);
-        var headers = this.FunctionTrait.getShopifyAPIHeadersForStore(store);
+        var headers = this.FunctionTrait.getShopifyAPIHeadersForStore(store.access_token);
         var result = await this.RequestTrait.makeAnAPICallToShopify('GET', endpoint, headers);
         return result.status && result.respBody && result.respBody.shop && result.respBody.shop.id; //Store ID returned which means it's a valid request            
     }

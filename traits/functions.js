@@ -70,10 +70,10 @@ module.exports = {
      * @param {object} store 
      * @returns {object} headers - Used to make authenticated Shopify API calls
      */
-    getShopifyAPIHeadersForStore(store) {
+    getShopifyAPIHeadersForStore(accessToken) {
         return {
             "Content-Type": "application/json",
-            "X-Shopify-Access-Token": store.accessToken
+            "X-Shopify-Access-Token": accessToken
         }
     },
 
@@ -125,7 +125,7 @@ module.exports = {
 
     async getShopifyStoreDetails(query, accessToken) {
         var endpoint = this.getShopifyAPIURLForStore('shop.json', {"myshopify_domain": query.shop});
-        var headers = this.getShopifyAPIHeadersForStore({"accessToken": accessToken});
+        var headers = this.getShopifyAPIHeadersForStore(accessToken);
         var response = await RequestTrait.makeAnAPICallToShopify('GET', endpoint, headers);
 
         console.log("HEADERS",headers)
