@@ -1,7 +1,7 @@
 const axios = require('axios');
     
 module.exports = {
-    makeAnAPICallToShopify: async function (method = 'GET', endpoint, headers, payload) {
+    makeAnAPICallToShopify: async function (method = 'GET', endpoint, headers, payload = {}) {
         let reqResult = null;
         try {
             if(method == 'GET') {

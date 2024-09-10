@@ -18,19 +18,19 @@ module.exports = () => {
             //API Request for draft orders
             const headers = getApIHeaders(shopifyStore.access_token);
             const endpoint = apiEndpoint(`draft_orders.json`, shopifyStore)
-            console.log(shopifyStore)
+
+            console.log("ENDPOINT", endpoint)
 
             try {
-                const orderRequest = await shopifyAPI(endpoint, headers)
+                const orderRequest = await shopifyAPI("GET",endpoint, headers)
                 const draftOrders = orderRequest
 
-                console.log("DRAFT ORDER \n", draftOrders)
+                console.log("DRAFT ORDER", draftOrders)
+                res.send(draftOrders.respBody)
 
             } catch (error) {
                 console.error(`There was an error with pulling the draft orders \n ${error}`)
-
-            } finally{
-                res.json({message: "Success"})
+                res.json({message: "There was an error"})
             }
 
         }
