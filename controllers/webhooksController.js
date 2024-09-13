@@ -9,6 +9,10 @@ module.exports = () => {
     var clientSecret = env.SHOPIFY_CLIENT_SECRET;
     var redirectUri = env.APP_URL+'shopify/auth/redirect';
 
+    const shopifyApi = requestTrait.makeAnAPICallToShopify
+    const getApIHeaders = functionTrait.getShopifyAPIHeadersForStore
+    const apiEndpoint = functionTrait.getShopifyAPIURLForStore
+
     return {
 
         /**
@@ -98,6 +102,29 @@ module.exports = () => {
                 return res.json({status: true, data: null}).status(200);
             }
             return res.status(401).json({status: false, data: 'Unauthorized'});
+        },
+        registerDraftOrderCreate: async function(req, res){
+            const userId = req.session.user.id
+            const userRecord = await mysqlAPI.findUserById(userId)
+            const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
+
+            //API Request to create webhook
+            const headers = getApIHeaders(shopifyStore.access_token);
+
+            const payload = {
+                "webhook": {
+                    "address":  `${process.env.APP_URL}/sync-draft-orders`,
+                    "topic": "draft_orders/update",
+                    "format": "json"
+                }
+            }
+
+            const endpoint = apiEndpoint("/webhooks.json", shopifyStore)
+
+            console.log("Payload", payload)
+            console.log("Endpoint", endpoint)
+
+            res.json({"tbd": payload})
         }
     }
 }
