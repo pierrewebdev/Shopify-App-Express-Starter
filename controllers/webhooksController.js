@@ -121,10 +121,47 @@ module.exports = () => {
 
             const endpoint = apiEndpoint("/webhooks.json", shopifyStore)
 
-            console.log("Payload", payload)
-            console.log("Endpoint", endpoint)
+            try {
+                const webhookRequest = await shopifyApi("POST",endpoint, headers, payload)
+                console.log(webhookRequest.respBody)
+                if(!webhookRequest.respBody.errors){
+                    res.send({success: "You have registered the webhook"})
+                    return
+                }
 
-            res.json({"tbd": payload})
+                res.send({"message": "There has been an error with registering the webhook"})
+            } catch (error) {
+                console.error("There was an error with registering the webhook", error)
+                res.json({
+                    error: error
+                })
+            }
+        },
+        getActiveWebhooks: async function(req, res){
+            const userId = req.session.user.id
+            const userRecord = await mysqlAPI.findUserById(userId)
+            const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
+
+            //API Request to create webhook
+            const headers = getApIHeaders(shopifyStore.access_token);
+            const endpoint = apiEndpoint("/webhooks.json", shopifyStore)
+
+            const webhooks = await shopifyApi("GET",endpoint, headers)
+            console.log(webhooks.respBody)
+
+                
+        },
+        deleteWebhook: async function (req, res, webhookId){
+            const userId = req.session.user.id
+            const userRecord = await mysqlAPI.findUserById(userId)
+            const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
+
+            //API Request to create webhook
+            const headers = getApIHeaders(shopifyStore.access_token);
+            const endpoint = apiEndpoint(`/webhooks.json/${webhookId}`, shopifyStore)
+
+            const webhooks = await shopifyApi("DELETE",endpoint, headers)
+            console.log("Successfully Deleted Webhook")
         }
     }
 }

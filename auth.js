@@ -9,7 +9,7 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     const dashboardController = require('./controllers/dashboardController')();
     const draftorderController = require('./controllers/draftorderController')();
     const webhooksController = require('./controllers/webhooksController')();
-    
+
     /** Do whatever with this middleware */
     //apiAuth is not currently being used
     function apiAuth(req, res, next) {
@@ -69,6 +69,14 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     })
 
     //Draft Order Routes
-    app.get("/get-draft-orders" , draftorderController.pullAllDraftOrders)
+    app.get("/sync-draft-orders", draftorderController.pullAllDraftOrders)
+
+    app.get("/test", webhooksController.registerDraftOrderCreate)
+
+    app.get("/get-webhooks", webhooksController.getActiveWebhooks)
+    app.get("/delete-webhook", (req, res) => {
+        webhooksController.deleteWebhook(req, res, 1561732251935)
+        res.send({"message": "Deleted webhook"})
+    })
 
 }

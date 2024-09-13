@@ -19,8 +19,6 @@ module.exports = () => {
             const headers = getApIHeaders(shopifyStore.access_token);
             const endpoint = apiEndpoint(`draft_orders.json`, shopifyStore)
 
-            console.log("ENDPOINT", endpoint)
-
             try {
                 const orderRequest = await shopifyAPI("GET",endpoint, headers)
                 const draftOrders = orderRequest.respBody
