@@ -113,7 +113,7 @@ module.exports = () => {
 
             const payload = {
                 "webhook": {
-                    "address":  `${process.env.APP_URL}/sync-draft-orders`,
+                    "address": process.env.APP_URL + "sync-draft-orders",
                     "topic": "draft_orders/update",
                     "format": "json"
                 }
@@ -148,20 +148,23 @@ module.exports = () => {
 
             const webhooks = await shopifyApi("GET",endpoint, headers)
             console.log(webhooks.respBody)
+            res.send(webhooks.respBody)
 
                 
         },
-        deleteWebhook: async function (req, res, webhookId){
+        deleteWebhook: async function (req, res){
             const userId = req.session.user.id
             const userRecord = await mysqlAPI.findUserById(userId)
             const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
 
+            const webhookId = req.params.id
+
             //API Request to create webhook
             const headers = getApIHeaders(shopifyStore.access_token);
-            const endpoint = apiEndpoint(`/webhooks.json/${webhookId}`, shopifyStore)
+            const endpoint = apiEndpoint(`webhooks/${webhookId}.json`, shopifyStore)
 
-            const webhooks = await shopifyApi("DELETE",endpoint, headers)
-            console.log("Successfully Deleted Webhook")
+            const deleteRequest = await shopifyApi("DELETE",endpoint, headers)
+            res.send({message: "Successfully Deleted Webhook"})
         }
     }
 }

@@ -123,6 +123,29 @@ async function updateOrCreateOnModel (Model, where, newItem) {
     return Model.findOne({where: where, raw: true});
 }
 
+async function findDraftOrderById(draftOrder) {
+    return await DraftOrder.findOne({
+        where: {
+            draft_order_id: draftOrder.id
+        }
+    })
+}
+
+async function createDraftOrderRecord(draftOrder, storeRecord) {
+    return DraftOrder.create({
+        draft_order_id: draftOrder.id,
+       currency: draftOrder.currency,
+       order_name: draftOrder.name,
+       order_line_items: JSON.stringify(draftOrder.line_items),
+       invoice_url: draftOrder.invoice_url,
+       total_price: draftOrder.total_price,
+       subtotal_price: draftOrder.subtotal_price,
+       total_tax: draftOrder.total_tax,
+       status: draftOrder.status,
+       store_id: storeRecord.id
+    })
+}
+
 module.exports = {
     findUserForStoreId,
     findUserById,
@@ -136,5 +159,7 @@ module.exports = {
    createUserStoreMapping,
     updateOrCreateOnModel,
     findUserWithStoreId,
-    createUserRecord
+    createUserRecord,
+    findDraftOrderById,
+    createDraftOrderRecord
 }

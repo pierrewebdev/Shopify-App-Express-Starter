@@ -2,6 +2,8 @@ const axios = require('axios');
     
 module.exports = {
     makeAnAPICallToShopify: async function (method = 'GET', endpoint, headers, payload = {}) {
+        // console.log("REQUEST DATA")
+        // console.log(method, "\n", endpoint, "\n", headers, "\n", payload)
         let reqResult = null;
         try {
             if(method == 'GET') {
@@ -27,7 +29,12 @@ module.exports = {
                         }
                     }
                 })
-            } else {
+            } 
+            else if(method == 'DELETE'){
+                deleteRequest = await axios.delete(endpoint, {headers: headers})
+                console.log("DELETE REQ", deleteRequest.status)
+            }
+            else {
                 reqResult = await axios.post(endpoint, payload, {headers: headers})
                 .then((res) => {
                     return {

@@ -8,12 +8,11 @@ module.exports = () => {
     const apiEndpoint = helperMethods.getShopifyAPIURLForStore
 
     return {
-        pullAllDraftOrders: async function (req, res) {
+        updateAllDraftOrders: async function (req, res) {
             //Make a request to Shopify API to pull all draft orders and then use the draftorder Model to store them in the db
 
-            const userId = req.session.user.id
-            const userRecord = await mysqlAPI.findUserById(userId)
-            const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
+            const storeDomain = req.headers['x-shopify-shop-domain']
+            const shopifyStore = await mysqlAPI.getStoreByDomain(storeDomain)
 
             //API Request for draft orders
             const headers = getApIHeaders(shopifyStore.access_token);
@@ -21,12 +20,36 @@ module.exports = () => {
 
             try {
                 const orderRequest = await shopifyAPI("GET",endpoint, headers)
-                const draftOrders = orderRequest.respBody
-                res.send(draftOrders)
+                const draftOrders = orderRequest.respBody.draft_orders
+
+                //find db record for each draft order and then update each
+                for (const draftOrder of draftOrders){
+                    const draftRecord = await mysqlAPI.findDraftOrderById(draftOrder)
+
+                    if(!draftRecord){
+                        await mysqlAPI.createDraftOrderRecord(draftOrder, shopifyStore)
+                    } else{
+                        draftRecord.set({
+                            draft_order_id: draftOrder.id,
+                            currency: draftOrder.currency,
+                            order_name: draftOrder.name,
+                            order_line_items: JSON.stringify(draftOrder.line_items),
+                            invoice_url: draftOrder.invoice_url,
+                            total_price: draftOrder.total_price,
+                            subtotal_price: draftOrder.subtotal_price,
+                            total_tax: draftOrder.total_tax,
+                            status: draftOrder.status
+                        })
+                        await draftRecord.save()
+                    }
+                }
+
+                console.log("I've successfully updated all records in db")
 
             } catch (error) {
                 console.error(`There was an error with pulling the draft orders \n ${error}`)
-                res.json({message: "There was an error"})
+            } finally {
+                res.sendStatus(200)
             }
 
         }

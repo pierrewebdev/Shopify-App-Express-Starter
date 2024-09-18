@@ -22,7 +22,7 @@ DraftOrder.init({
         type: DataTypes.INTEGER
     },
     draft_order_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         notEmpty: true
     },
     currency: {
@@ -67,6 +67,6 @@ DraftOrder.init({
 },
 )
 
-DraftOrder.sync()
+// DraftOrder.sync()
 
 module.exports = DraftOrder

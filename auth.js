@@ -69,14 +69,11 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     })
 
     //Draft Order Routes
-    app.get("/sync-draft-orders", draftorderController.pullAllDraftOrders)
+    app.post("/sync-draft-orders", draftorderController.updateAllDraftOrders)
 
     app.get("/test", webhooksController.registerDraftOrderCreate)
 
     app.get("/get-webhooks", webhooksController.getActiveWebhooks)
-    app.get("/delete-webhook", (req, res) => {
-        webhooksController.deleteWebhook(req, res, 1561732251935)
-        res.send({"message": "Deleted webhook"})
-    })
+    app.delete("/delete-webhook/:id", webhooksController.deleteWebhook)
 
 }
