@@ -5,6 +5,7 @@ module.exports = () => {
   const mysqlAPI = require("../src/mysql-api");
   const functionTrait = require('../traits/functions');
   const requestTrait = require('../traits/requests');
+  const moment = require("moment")
 
   return {
     index: async function (req, res) {
@@ -42,7 +43,8 @@ module.exports = () => {
 
         return res.render("invoice-template", {
             storeName: shopifyStore.name,
-            draftOrder: draftOrderRecord
+            draftOrder: draftOrderRecord,
+            invoiceDate: moment(draftOrderRecord.createdAt).format("MMMM Do YYYY")
         })
         
       } catch (error) {
