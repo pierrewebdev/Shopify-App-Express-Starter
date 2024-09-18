@@ -90,3 +90,8 @@
 .invoice-box.rtl table tr td:nth-child(2) {
     text-align: left;
 }
+
+/*Custom CSS for main dashboard table*/
+.dashboard-table tr[data-href]{
+    cursor: pointer;
+}

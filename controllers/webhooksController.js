@@ -114,7 +114,7 @@ module.exports = () => {
             const payload = {
                 "webhook": {
                     "address": process.env.APP_URL + "sync-draft-orders",
-                    "topic": "draft_orders/update",
+                    "topic": "draft_orders/create",
                     "format": "json"
                 }
             }

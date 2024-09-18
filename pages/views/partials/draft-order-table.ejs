@@ -1,5 +1,5 @@
 <section>
-    <table>
+    <table class = "dashboard-table">
         <thead>
             <tr>
                 <th>Order Name</th>
@@ -13,7 +13,7 @@
         
         <tbody>
             <% for (let draft of draftOrders) { %>
-                <tr>
+                <tr data-href="#" onclick = "openInvoiceTemplate(`<%= draft.draft_order_id %>`)">
                     <td><%= draft.order_name %></td>
                     <td><%= draft.draft_order_id %></td>
                     <td><%= draft.status %></td>
@@ -48,3 +48,9 @@
         </tbody>
     </table>
 </section>
+
+<script>
+    const openInvoiceTemplate = function(draftOrderId){
+        window.location.href = `/invoice/${draftOrderId}`
+    }
+</script>

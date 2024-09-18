@@ -40,7 +40,7 @@ async function setupModels(){
     User.sync()
     ShopifyStore.sync()
     UserStore.sync()
-    DraftOrder.sync({force: true})
+    DraftOrder.sync()
 }
 
 module.exports = setupModels
