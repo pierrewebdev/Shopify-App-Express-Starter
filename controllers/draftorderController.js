@@ -24,7 +24,7 @@ module.exports = () => {
 
                 //find db record for each draft order and then update each
                 for (const draftOrder of draftOrders){
-                    const draftRecord = await mysqlAPI.findDraftOrderById(draftOrder)
+                    const draftRecord = await mysqlAPI.findDraftOrderById(draftOrder.id)
 
                     if(!draftRecord){
                         await mysqlAPI.createDraftOrderRecord(draftOrder, shopifyStore)

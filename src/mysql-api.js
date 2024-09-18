@@ -123,10 +123,11 @@ async function updateOrCreateOnModel (Model, where, newItem) {
     return Model.findOne({where: where, raw: true});
 }
 
-async function findDraftOrderById(draftOrder) {
+//uses the draft order id from Shopify now the primary key of the Draft Order DB
+async function findDraftOrderById(draftOrderId) {
     return await DraftOrder.findOne({
         where: {
-            draft_order_id: draftOrder.id
+            draft_order_id: draftOrderId
         }
     })
 }

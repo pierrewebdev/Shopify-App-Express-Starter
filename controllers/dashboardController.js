@@ -35,9 +35,14 @@ module.exports = () => {
         const userId = req.session.user.id
         const userRecord = await mysqlAPI.findUserById(userId)
         const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
+        const shopifyDraftOrderId = req.params.draft_id
+
+        const draftOrderRecord = await mysqlAPI.findDraftOrderById(shopifyDraftOrderId)
+
 
         return res.render("invoice-template", {
-            storeName: shopifyStore.name   
+            storeName: shopifyStore.name,
+            draftOrder: draftOrderRecord
         })
         
       } catch (error) {
