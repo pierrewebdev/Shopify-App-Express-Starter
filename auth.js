@@ -52,6 +52,11 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.post('/gdpr/customer_data_request', webhooksController.getCustomerData);
     app.post('/shop_data_delete', webhooksController.shopDataDelete);
 
+    //Other webhooks
+    app.get("/register-draft-webhook", webhooksController.registerDraftOrderCreate)
+    app.get("/get-webhooks", webhooksController.getActiveWebhooks)
+    app.delete("/delete-webhook/:id", webhooksController.deleteWebhook)
+
     //App Installation Routes
     app.get('/shopify/auth', installationController.index);
     app.get('/shopify/auth/redirect', installationController.redirect);
@@ -70,10 +75,5 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
 
     //Draft Order Routes
     app.post("/sync-draft-orders", draftorderController.updateAllDraftOrders)
-
-    app.get("/test", webhooksController.registerDraftOrderCreate)
-
-    app.get("/get-webhooks", webhooksController.getActiveWebhooks)
-    app.delete("/delete-webhook/:id", webhooksController.deleteWebhook)
 
 }

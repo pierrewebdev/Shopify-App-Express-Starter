@@ -146,6 +146,10 @@ async function createDraftOrderRecord(draftOrder, storeRecord) {
     })
 }
 
+async function getAllDraftOrders() {
+    return await DraftOrder.findAll()
+}
+
 module.exports = {
     findUserForStoreId,
     findUserById,
@@ -161,5 +165,6 @@ module.exports = {
     findUserWithStoreId,
     createUserRecord,
     findDraftOrderById,
-    createDraftOrderRecord
+    createDraftOrderRecord,
+    getAllDraftOrders
 }

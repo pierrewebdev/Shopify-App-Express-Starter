@@ -13,8 +13,11 @@ module.exports = () => {
         const userRecord = await mysqlAPI.findUserById(userId)
         const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
 
+        const draftOrders = await mysqlAPI.getAllDraftOrders()
+
         return res.render("index", {
-            storeName: shopifyStore.name   
+            storeName: shopifyStore.name,
+            draftOrders: draftOrders
         })
         
       } catch (error) {

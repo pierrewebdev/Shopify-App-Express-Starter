@@ -1,0 +1,50 @@
+<section>
+    <table>
+        <thead>
+            <tr>
+                <th>Order Name</th>
+                <th>Order ID</th>
+                <!-- <th>Customer</th> -->
+                <th>Payment Status</th>
+                <th>Currency</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            <% for (let draft of draftOrders) { %>
+                <tr>
+                    <td><%= draft.order_name %></td>
+                    <td><%= draft.draft_order_id %></td>
+                    <td><%= draft.status %></td>
+                    <td><%= draft.currency %></td>
+                    <td>$<%= draft.total_price %></td>
+                </tr>
+            <% } %>
+            <!-- <tr>
+                <td><b>#1011</b></td>
+                <td>May 25th at 1:24 am</td>
+                <td>Patrick Pierre</td>
+                <td>Refunded</td>
+                <td>Unfulfilled</td>
+                <td>$376.16</td>
+            </tr>
+            <tr>
+                <td><b>#1012</b></td>
+                <td>May 25th at 1:24 am</td>
+                <td>Patrick Pierre</td>
+                <td>Paid</td>
+                <td>Unfulfilled</td>
+                <td>$276.24</td>
+            </tr>
+            <tr>
+                <td><b>#1013</b></td>
+                <td>May 25th at 1:24 am</td>
+                <td>Patrick Pierre</td>
+                <td>Refunded</td>
+                <td>Unfulfilled</td>
+                <td>$300.74</td>
+            </tr> -->
+        </tbody>
+    </table>
+</section>
