@@ -48,21 +48,22 @@
                 <td>Price</td>
             </tr>
     
-            <tr class="item">
-                <td>
-                    <div>
-                        <img class = "column one" src="https://9r0rm5qu0xu76d9i-68286316831.shopifypreview.com/cdn/shop/files/AdeleChainBracelet.png?v=1706763561&width=50" alt="">
-                        <div class = "column three">
-                            Adele Chain Bracelet 
-                            Quantity: 1
+            <% for (item of JSON.parse(draftOrder.order_line_items)){ %>
+                <tr class="item">
+                    <td>
+                        <div>
+                            <img class = "column one" src="https://9r0rm5qu0xu76d9i-68286316831.shopifypreview.com/cdn/shop/files/AdeleChainBracelet.png?v=1706763561&width=50" alt="">
+                            <div class = "column three">
+                                <%= item.name %>
+                                Quantity: <%= item.quantity %>
+                            </div>
                         </div>
-                    </div>
-                </td>
-    
-                <td>$300.00</td>
-            </tr>
-    
-            <tr class="item">
+                    </td>
+        
+                    <td>$<%= item.price %></td>
+                </tr>
+            <% } %>
+            <!-- <tr class="item">
                 <td>
                     <div>
                         <img class = "column one" src="https://9r0rm5qu0xu76d9i-68286316831.shopifypreview.com/cdn/shop/files/AdeleChainBracelet.png?v=1706763561&width=50" alt="">
@@ -74,37 +75,9 @@
                 </td>
     
                 <td>$69.00</td>
-            </tr>
-
-            <tr class="item">
-                <td>
-                    <div>
-                        <img class = "column one" src="https://9r0rm5qu0xu76d9i-68286316831.shopifypreview.com/cdn/shop/files/AdeleChainBracelet.png?v=1706763561&width=50" alt="">
-                        <div class = "column three">
-                            Rose Gold Zircon Radiant Mangalsutra Bracelet
-                            Quantity: 1
-                        </div>
-                    </div>
-                </td>
+            </tr> -->
     
-                <td>$71.00</td>
-            </tr>
-
-            <tr class="item">
-                <td>
-                    <div>
-                        <img class = "column one" src="https://9r0rm5qu0xu76d9i-68286316831.shopifypreview.com/cdn/shop/files/AdeleChainBracelet.png?v=1706763561&width=50" alt="">
-                        <div class = "column three">
-                            Rose Gold Dual Heart Bracelet 
-                            Quantity: 1
-                        </div>
-                    </div>
-                </td>
-    
-                <td>$67.00</td>
-            </tr>
-    
-            <tr class="item last">
+            <!-- <tr class="item last">
                 <td>
                     <div>
                         <img class = "column one" src="https://9r0rm5qu0xu76d9i-68286316831.shopifypreview.com/cdn/shop/files/AdeleChainBracelet.png?v=1706763561&width=50" alt="">
@@ -116,12 +89,12 @@
                 </td>
     
                 <td>$117.00</td>
-            </tr>
+            </tr> -->
     
             <tr class="total">
                 <td></td>
     
-                <td>Total: $424.00</td>
+                <td>Total: $<%= draftOrder.total_price %></td>
             </tr>
         </table>
     </div>

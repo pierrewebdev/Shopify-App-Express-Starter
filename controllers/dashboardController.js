@@ -40,7 +40,6 @@ module.exports = () => {
 
         const draftOrderRecord = await mysqlAPI.findDraftOrderById(shopifyDraftOrderId)
 
-
         return res.render("invoice-template", {
             storeName: shopifyStore.name,
             draftOrder: draftOrderRecord,
