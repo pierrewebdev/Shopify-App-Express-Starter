@@ -188,21 +188,6 @@ module.exports = {
         var headers = this.getShopifyAPIHeadersForStore(dbRecord);
         var response = await RequestTrait.makeAnAPICallToShopify('GET', endpoint, headers);
         return response.status && response.respBody.hasOwnProperty('shop');
-    },
-
-    formatDate (date) {
-        const date = new Date(date)
-        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-        const day = days[date.getDay()]
-        const month = date.toLocaleString('default', { month: 'long' })
-
-        const dayOfMonth = date.getDate()
-        const ordinal = dayOfMonth + (dayOfMonth === 1 ? "st" : dayOfMonth === 2 ? "nd" : dayOfMonth === 3 ? "rd" : "th")
-
-        const year = date.getFullYear()
-
-        const formattedDate = `${day}, ${month} ${ordinal} ${year}`
-        return formattedDate
     }
 }
 
