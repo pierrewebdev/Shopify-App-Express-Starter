@@ -18,13 +18,64 @@ module.exports = () => {
             const headers = getApIHeaders(shopifyStore.access_token);
             const endpoint = apiEndpoint(`draft_orders.json`, shopifyStore)
 
+            //Helper function to get line item id from GraphQL
+            const extractIdFromGid = (gid) => {
+                const parts = gid.split('/');
+                return parts[parts.length - 1];
+            }
+
             try {
                 const orderRequest = await shopifyAPI("GET",endpoint, headers)
                 const draftOrders = orderRequest.respBody.draft_orders
 
                 //find db record for each draft order and then update each
                 for (const draftOrder of draftOrders){
+                    //console.log("Draft Order", draftOrder.line_items)
                     const draftRecord = await mysqlAPI.findDraftOrderById(draftOrder.id)
+                    const draftOrderGid = draftOrder.admin_graphql_api_id
+                    //Add images to the line items array on the draft order
+
+                    const headers = getApIHeaders(shopifyStore.access_token);
+                    const endpoint = apiEndpoint(`graphql.json`, shopifyStore)
+                
+
+                    const imageQuery = `query GetLineItemImage($draftId : ID!){
+                        draftOrder(id: $draftId){
+                            id
+                            lineItems(first: 10){
+                                edges{
+                                    node{
+                                        id
+                                        image{
+                                            url
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }`
+
+                    const payload = JSON.stringify({
+                        query: imageQuery,
+                        variables: {
+                            "draftId" : draftOrderGid
+                        }
+                    })
+
+                    const gqlReq = await shopifyAPI("POST",endpoint, headers, payload)
+                    console.log(`This is from Draft Order #${draftOrder.id}`)
+                    //console.log(gqlReq.respBody.data.draftOrder.lineItems.edges[0].node)
+
+                    const lineItems = gqlReq.respBody.data.draftOrder.lineItems
+
+                    const imagesByLineItem = lineItems.edges.map(obj => {
+                        return {
+                            lineItemId: extractIdFromGid(obj.node.id),
+                            imageUrl: obj.node.image.url
+                        }
+                    })
+
+                    console.log(imagesByLineItem)
 
                     if(!draftRecord){
                         await mysqlAPI.createDraftOrderRecord(draftOrder, shopifyStore)
