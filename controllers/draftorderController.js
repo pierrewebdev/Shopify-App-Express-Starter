@@ -18,12 +18,6 @@ module.exports = () => {
             const headers = getApIHeaders(shopifyStore.access_token);
             const endpoint = apiEndpoint(`graphql.json`, shopifyStore)
 
-            //Helper function to get line item id from GraphQL
-            const extractIdFromGid = (gid) => {
-                const parts = gid.split('/');
-                return parts[parts.length - 1];
-            }
-
             try {
                 const draftOrdersQuery = `query GetDraftOrders{
                      draftOrders(first:10){

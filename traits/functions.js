@@ -188,6 +188,12 @@ module.exports = {
         var headers = this.getShopifyAPIHeadersForStore(dbRecord);
         var response = await RequestTrait.makeAnAPICallToShopify('GET', endpoint, headers);
         return response.status && response.respBody.hasOwnProperty('shop');
+    },
+
+    //Helper function to get shopify id from GraphQL GID
+    extractIdFromGid: function(gid){
+        const parts = gid.split('/');
+        return parts[parts.length - 1];
     }
 }
 
