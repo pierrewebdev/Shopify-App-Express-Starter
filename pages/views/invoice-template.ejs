@@ -52,7 +52,7 @@
                 <tr class="item">
                     <td>
                         <div>
-                            <img class = "column one" src="https://9r0rm5qu0xu76d9i-68286316831.shopifypreview.com/cdn/shop/files/AdeleChainBracelet.png?v=1706763561&width=50" alt="">
+                            <img class = "column one" src="<%= item.imageUrl %>" alt="">
                             <div class = "column three">
                                 <%= item.name %>
                                 Quantity: <%= item.quantity %>
@@ -60,7 +60,7 @@
                         </div>
                     </td>
         
-                    <td>$<%= item.price %></td>
+                    <td>$<%= Number(item.price).toFixed(2) %></td>
                 </tr>
             <% } %>
             <!-- <tr class="item">
