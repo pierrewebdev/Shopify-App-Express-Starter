@@ -134,7 +134,7 @@ async function findDraftOrderById(draftOrderId) {
 
 async function createDraftOrderRecord(draftOrder, storeRecord) {
     return DraftOrder.create({
-        draft_order_id: draftOrder.id,
+       draft_order_id: draftOrder.id,
        currency: draftOrder.currency,
        order_name: draftOrder.name,
        order_line_items: JSON.stringify(draftOrder.line_items),

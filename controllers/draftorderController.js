@@ -1,6 +1,7 @@
 module.exports = () => {
     const mysqlAPI = require("../src/mysql-api")
     const env = require('dotenv').config()
+    const R = require("ramda")
     const shopifyAPI = require("../traits/requests").makeAnAPICallToShopify
     const helperMethods = require("../traits/functions")
 
@@ -46,7 +47,14 @@ module.exports = () => {
                             lineItems(first: 10){
                                 edges{
                                     node{
+                                        name
+                                        quantity
                                         id
+                                        discountedTotalSet{
+                                            shopMoney{
+                                                amount
+                                            }
+                                        }
                                         image{
                                             url
                                         }
@@ -65,77 +73,66 @@ module.exports = () => {
                 const gqlReq = await shopifyAPI("POST",endpoint, headers, payload)
 
                 //const orderRequest = await shopifyAPI("GET",endpoint, headers)
-                const draftOrders = gqlReq.respBody.data.draftOrders.edges
+                //const draftOrders = gqlReq.respBody.data.draftOrders.edges
+                const draftOrders = R.path(["respBody", "data", "draftOrders", "edges"])(gqlReq)
 
-                console.log("Draft Orders", draftOrders[0].node.lineItems.edges[0].node)
                 //draftOrders.edges[0].node.lineItems.edges[0].node
 
                 //find db record for each draft order and then update each
-                // for (const draftOrder of draftOrders){
-                //     //console.log("Draft Order", draftOrder.line_items)
-                //     const draftRecord = await mysqlAPI.findDraftOrderById(draftOrder.id)
-                //     const draftOrderGid = draftOrder.admin_graphql_api_id
-                //     //Add images to the line items array on the draft order
+                for (const draftOrder of draftOrders){
+                    //Add images to the line items array on the draft order
 
-                //     const headers = getApIHeaders(shopifyStore.access_token);
-                //     const endpoint = apiEndpoint(`graphql.json`, shopifyStore)
-                
+                    const orderData = R.path(["node"])(draftOrder)
+                    const formattedDraftData = {}
 
-                //     const imageQuery = `query GetLineItemImage($draftId : ID!){
-                //         draftOrder(id: $draftId){
-                //             id
-                //             lineItems(first: 10){
-                //                 edges{
-                //                     node{
-                //                         id
-                //                         image{
-                //                             url
-                //                         }
-                //                     }
-                //                 }
-                //             }
-                //         }
-                //     }`
+                    formattedDraftData.id = helperMethods.extractIdFromGid(orderData.id)
+                    formattedDraftData.name = orderData.name
+                    formattedDraftData.invoice_url = orderData.invoiceUrl
+                    formattedDraftData.status = orderData.status
+                    formattedDraftData.currency = orderData.currencyCode
+                    formattedDraftData.total_tax = R.path(["shopMoney", "amount"])(orderData.totalTaxSet)
+                    formattedDraftData.total_price = R.path(["shopMoney", "amount"])(orderData.totalPriceSet)
+                    formattedDraftData.subtotal_price = R.path(["shopMoney", "amount"])(orderData.subtotalPriceSet)
 
-                //     const payload = JSON.stringify({
-                //         query: imageQuery,
-                //         variables: {
-                //             "draftId" : draftOrderGid
-                //         }
-                //     })
+                    const lineItems = R.pipe(
+                        R.path(["edges"]),
+                        R.map(obj => obj.node),
+                        R.map((lineItem) => {
+                            const tmp = {
+                                name: lineItem.name,
+                                quantity: lineItem.quantity,
+                                shopifyId: helperMethods.extractIdFromGid(lineItem.id),
+                                price: lineItem.discountedTotalSet.shopMoney.amount,
+                                imageUrl: lineItem.image.url
+                            }
 
-                //     const gqlReq = await shopifyAPI("POST",endpoint, headers, payload)
-                //     //console.log(`This is from Draft Order #${draftOrder.id}`)
-                //     //console.log(gqlReq.respBody.data.draftOrder.lineItems.edges[0].node)
+                            return tmp
+                        })
 
-                //     const lineItems = gqlReq.respBody.data.draftOrder.lineItems
+                    )(orderData.lineItems)
 
-                //     const imagesByLineItem = lineItems.edges.map(obj => {
-                //         return {
-                //             lineItemId: extractIdFromGid(obj.node.id),
-                //             imageUrl: obj.node.image.url
-                //         }
-                //     })
+                    formattedDraftData.line_items = lineItems
 
-                //     console.log(imagesByLineItem)
+                    const draftRecord = await mysqlAPI.findDraftOrderById(formattedDraftData.id)
 
-                //     if(!draftRecord){
-                //         await mysqlAPI.createDraftOrderRecord(draftOrder, shopifyStore)
-                //     } else{
-                //         draftRecord.set({
-                //             draft_order_id: draftOrder.id,
-                //             currency: draftOrder.currency,
-                //             order_name: draftOrder.name,
-                //             order_line_items: JSON.stringify(draftOrder.line_items),
-                //             invoice_url: draftOrder.invoice_url,
-                //             total_price: draftOrder.total_price,
-                //             subtotal_price: draftOrder.subtotal_price,
-                //             total_tax: draftOrder.total_tax,
-                //             status: draftOrder.status
-                //         })
-                //         await draftRecord.save()
-                //     }
-                // }
+
+                    if(!draftRecord){
+                        await mysqlAPI.createDraftOrderRecord(formattedDraftData, shopifyStore)
+                    } else{
+                        draftRecord.set({
+                            draft_order_id: formattedDraftData.id,
+                            currency: formattedDraftData.currency,
+                            order_name: formattedDraftData.name,
+                            order_line_items: JSON.stringify(formattedDraftData.line_items),
+                            invoice_url: formattedDraftData.invoice_url,
+                            total_price: formattedDraftData.total_price,
+                            subtotal_price: formattedDraftData.subtotal_price,
+                            total_tax: formattedDraftData.total_tax,
+                            status: formattedDraftData.status
+                        })
+                        await draftRecord.save()
+                    }
+                }
 
                 console.log("I've successfully updated all records in db")
 
