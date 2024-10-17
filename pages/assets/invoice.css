@@ -63,6 +63,30 @@
     border-top: 2px solid #eee;
 }
 
+.dashboard_link{
+    display: inline-block;
+    padding: 10px 20px;
+    background: transparent !important;
+    color: #007bff;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: unset;
+}
+
+.dashboard_link:focus, .dashboard_link:hover{
+    box-shadow: unset;
+    color: #007bff;
+}
+
+.dashboard_arrow{
+    transform: rotate(180deg);
+    display: inline-block;
+    font-size: 15px;
+    margin-right: 0.5rem;
+}
+
 @media only screen and (max-width: 600px) {
     .invoice-box table tr.top table td {
         width: 100%;

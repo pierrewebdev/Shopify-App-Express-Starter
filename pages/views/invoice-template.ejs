@@ -10,6 +10,7 @@
                 <td colspan="2">
                     <table>
                         <tr>
+                            <button data-href="#" class = "dashboard_link" onclick = "backToDashboard()"><span class="dashboard_arrow">&#10140;</span>Back to Dashbaord</button>
                             <td class="title">
                                 INVOICE
                             </td>
@@ -103,3 +104,9 @@
         </table>
     </div>
 </section>
+
+<script>
+    const backToDashboard = function(){
+        window.location.href = `/dashboard`
+    }
+</script>
