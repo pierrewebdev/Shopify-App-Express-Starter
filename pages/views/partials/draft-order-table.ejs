@@ -16,7 +16,7 @@
                 <tr data-href="#" onclick = "openInvoiceTemplate(`<%= draft.draft_order_id %>`)">
                     <td><%= draft.order_name %></td>
                     <td><%= draft.draft_order_id %></td>
-                    <td><%= draft.status %></td>
+                    <td><%= draft.status.toLowerCase() %></td>
                     <td><%= draft.currency %></td>
                     <td>$<%= draft.total_price %></td>
                 </tr>

@@ -61,7 +61,6 @@
 
 .invoice-box table tr.total td:nth-child(2) {
     border-top: 2px solid #eee;
-    font-weight: bold;
 }
 
 @media only screen and (max-width: 600px) {

@@ -92,9 +92,13 @@
             </tr> -->
     
             <tr class="total">
-                <td></td>
+                <td style = "width: 58vw; max-width: 840px;"></td>
     
-                <td>Total: $<%= draftOrder.total_price %></td>
+                <td>
+                    Subtotal: $<%= Number(draftOrder.subtotal_price).toFixed(2) %> <br>
+                    Tax: $<%= Number(draftOrder.total_tax).toFixed(2) %> <br>
+                    <span style = "font-weight: bold;">Total: $<%= Number(draftOrder.total_price).toFixed(2) %></span>
+                </td>
             </tr>
         </table>
     </div>
