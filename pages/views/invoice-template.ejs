@@ -108,7 +108,7 @@
             <div class="card-section">
                 <h4 style = "margin-bottom: 0;">Send Invoice via Email</h4>
             </div>
-            <form class = "card-section" action="">
+            <form class = "card-section" action="/send-invoice-email" method = "post" enctype = "multipart/form-data">
                 <div class="row">
                     <label for="customer-email">To:</label>
                     <input type="email" name="customer-email" id="customer-email">
@@ -123,9 +123,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="button secondary">
-                        Send Invoice
-                    </div>
+                    <input type="submit" value="Send Invoice">
                 </div>
             </form>
         </div>

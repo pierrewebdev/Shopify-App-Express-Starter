@@ -76,4 +76,10 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     //Draft Order Routes
     app.post("/sync-draft-orders", draftorderController.updateAllDraftOrders)
 
+    //Send Invoice Email
+    app.post("/send-invoice-email", (req, res) => {
+        console.log("REQ INFO", "\n", req.body)
+        res.send("<p>I have received your request</p>")
+    })
+
 }
