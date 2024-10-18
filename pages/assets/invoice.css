@@ -119,3 +119,10 @@
 .dashboard-table tr[data-href]{
     cursor: pointer;
 }
+
+/*Custom CSS for invoice template */
+@media screen and (min-width: 980px){
+    .invoice-box{
+        margin-left: 2rem !important;
+    }
+}
