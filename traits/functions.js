@@ -1,6 +1,7 @@
 var crypto = require('crypto');
 var RequestTrait = require('./requests');
 var mysqlAPI = require("../src/mysql-api");
+const { MailerSend, EmailParams, Sender, Recipient } =  require("mailersend");
 
 // const nodeCache = require('node-cache');
 // const cacheInstance = new nodeCache();
@@ -194,6 +195,28 @@ module.exports = {
     extractIdFromGid: function(gid){
         const parts = gid.split('/');
         return parts[parts.length - 1];
+    },
+
+    sendInvoiceEmail: async function(){
+        const mailerSend = new MailerSend({
+            apiKey: process.env.MAILER_SEND_API_KEY,
+          });
+          
+          const sentFrom = new Sender("you@yourdomain.com", "Your name");
+          
+          const recipients = [
+            new Recipient("your@client.com", "Your Client")
+          ];
+          
+          const emailParams = new EmailParams()
+            .setFrom(sentFrom)
+            .setTo(recipients)
+            .setReplyTo(sentFrom)
+            .setSubject("This is a Subject")
+            .setHtml("<strong>This is the HTML content</strong>")
+            .setText("This is the text content");
+          
+          await mailerSend.email.send(emailParams);
     }
 }
 
