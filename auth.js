@@ -1,5 +1,6 @@
 
 const jwt = require('jsonwebtoken');
+const { tryCatch } = require('ramda');
 
 module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
 
@@ -77,9 +78,17 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.post("/sync-draft-orders", draftorderController.updateAllDraftOrders)
 
     //Send Invoice Email
+    const functionTrait = require('./traits/functions');
+    const sendInvoiceEmail = functionTrait.sendInvoiceEmail
     app.post("/send-invoice-email", (req, res) => {
-        console.log("REQ INFO", "\n", req.body)
-        res.send("<p>I have received your request</p>")
+        try{
+            sendInvoiceEmail("patrick.pierre000@gmail.com", "Sending Your Invoice")
+        } catch(err){
+            console.log ("Something went wring with sending the email", err)
+        } finally{
+            res.send("<p>I have received your request</p>")
+        }
+        
     })
 
 }
