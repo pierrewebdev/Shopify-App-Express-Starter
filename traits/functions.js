@@ -197,7 +197,17 @@ module.exports = {
         return parts[parts.length - 1];
     },
 
-    sendInvoiceEmail: async function (recipient, subjectLine) {
+    sendInvoiceEmail: async function (emailData) {
+        const { 
+            orderName, 
+            storeName, 
+            lineItems, 
+            customerEmail,
+            customerName,
+            invoiceSubjectLine, 
+            customMessage 
+        } = emailData
+
         const mailerSend = new MailerSend({
             apiKey: process.env.MAILER_SEND_API_KEY,
         });
@@ -205,14 +215,14 @@ module.exports = {
         const sentFrom = new Sender("test@trial-v69oxl5njkzl785k.mlsender.net", "Patrick");
 
         const recipients = [
-            new Recipient(recipient, "Patrick Pierre")
+            new Recipient(customerEmail, customerName)
         ];
 
         const emailParams = new EmailParams()
             .setFrom(sentFrom)
             .setTo(recipients)
             .setReplyTo(sentFrom)
-            .setSubject(subjectLine)
+            .setSubject(invoiceSubjectLine)
             .setHtml(`
                 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
                 <html lang="en" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:v="urn:schemas-microsoft-com:vml">
@@ -331,7 +341,7 @@ module.exports = {
                                                         <tbody>
                                                             <tr>
                                                                 <td class="pad">
-                                                                <h1 style="margin: 0; color: #1e0e4b; direction: ltr; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; font-size: 18px; font-weight: 400; letter-spacing: normal; line-height: 120%; text-align: left; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 21.599999999999998px;"><span class="tinyMce-placeholder" style="word-break: break-word;">Appless Wishlist</span></h1>
+                                                                <h1 style="margin: 0; color: #1e0e4b; direction: ltr; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; font-size: 18px; font-weight: 400; letter-spacing: normal; line-height: 120%; text-align: left; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 21.599999999999998px;"><span class="tinyMce-placeholder" style="word-break: break-word;">${storeName}</span></h1>
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -354,7 +364,7 @@ module.exports = {
                                                             <tr>
                                                                 <td class="pad">
                                                                 <div style="color:#444a5b;direction:ltr;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:14px;font-weight:400;letter-spacing:0px;line-height:120%;text-align:right;mso-line-height-alt:16.8px;">
-                                                                    <p style="margin: 0; margin-bottom: 16px;">Invoice #D2</p>
+                                                                    <p style="margin: 0; margin-bottom: 16px;">${invoiceSubjectLine}</p>
                                                                     <p style="margin: 0;">September 18th 2024</p>
                                                                 </div>
                                                                 </td>
@@ -383,7 +393,7 @@ module.exports = {
                                                             <tr>
                                                                 <td class="pad" style="padding-bottom:25px;padding-left:25px;padding-right:10px;padding-top:10px;">
                                                                 <div style="color:#555555;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:28px;line-height:120%;text-align:left;mso-line-height-alt:33.6px;">
-                                                                    <p style="margin: 0; word-break: break-word;"><span style="word-break: break-word;">Hi John Adams</span></p>
+                                                                    <p style="margin: 0; word-break: break-word;"><span style="word-break: break-word;">Hi ${customerName}</span></p>
                                                                 </div>
                                                                 </td>
                                                             </tr>
@@ -394,7 +404,7 @@ module.exports = {
                                                             <tr>
                                                                 <td class="pad" style="padding-bottom:10px;padding-left:25px;padding-right:10px;padding-top:10px;">
                                                                 <div style="color:#555555;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:18px;line-height:150%;text-align:left;mso-line-height-alt:27px;">
-                                                                    <p style="margin: 0; word-break: break-word;"><span style="word-break: break-word;">Here is an overview of your order from Appless Wishlist. Please use the button at the bottom of the email to complete your purchase.</span></p>
+                                                                    <p style="margin: 0; word-break: break-word;"><span style="word-break: break-word;">Here is an overview of your order from ${storeName}. Please use the button at the bottom of the email to complete your purchase.</span></p>
                                                                 </div>
                                                                 </td>
                                                             </tr>
@@ -539,6 +549,7 @@ module.exports = {
                                     </tr>
                                 </tbody>
                             </table>
+                            <!-- ====== The Whole TBody and Table Element is a line item ====== -->
                             <table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-6" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
                                 <tbody>
                                     <tr>
@@ -949,7 +960,9 @@ module.exports = {
                                     </tr>
                                 </tbody>
                             </table>
-                            <table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-16" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
+
+                            <!-- ==========This is after the last Line Item and the start of the email footer
+                            <table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-16 email-footer" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
                                 <tbody>
                                     <tr>
                                         <td>

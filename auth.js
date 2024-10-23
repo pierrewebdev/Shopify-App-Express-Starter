@@ -79,16 +79,6 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
 
     //Send Invoice Email
     const functionTrait = require('./traits/functions');
-    const sendInvoiceEmail = functionTrait.sendInvoiceEmail
-    app.post("/send-invoice-email", (req, res) => {
-        try{
-            sendInvoiceEmail("patrick.pierre000@gmail.com", "Sending Your Invoice")
-        } catch(err){
-            console.log ("Something went wring with sending the email", err)
-        } finally{
-            res.send("<p>I have received your request</p>")
-        }
-        
-    })
+    app.post("/send-invoice-email", dashboardController.sendInvoiceEmail)
 
 }

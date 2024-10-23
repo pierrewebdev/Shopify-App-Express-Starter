@@ -55,6 +55,42 @@ module.exports = () => {
           }
         })
       }
-    }
+    },
+    sendInvoiceEmail: async function (req, res){
+      try{
+        const userId = req.session.user.id
+        const userRecord = await mysqlAPI.findUserById(userId)
+        const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
+
+        // console.log("I received the data", req.body)
+
+        const { 
+          customerEmail, 
+          customerName, 
+          invoiceSubjectLine, 
+          customMessage, 
+          invoiceId } = req.body
+
+        const draftRecord = await mysqlAPI.findDraftOrderById(invoiceId)
+
+        const draftOrderData = draftRecord.dataValues
+        const invoiceEmailData = {
+          orderName: draftOrderData.order_name,
+          storeName: shopifyStore.name,
+          lineItems: draftOrderData.order_line_items,
+          customerEmail: customerEmail,
+          customerName: customerName,
+          invoiceSubjectLine: invoiceSubjectLine,
+          customMessage: customMessage
+        }
+
+         functionTrait.sendInvoiceEmail(invoiceEmailData)
+
+      } catch(err){
+          console.log ("Something went wring with sending the email", err)
+      } finally{
+          res.send("<p>I have received your request</p>")
+      }
+    } 
   }
 }

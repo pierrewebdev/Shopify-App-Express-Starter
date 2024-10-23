@@ -108,7 +108,7 @@
             <div class="card-section">
                 <h4 style = "margin-bottom: 0;">Send Invoice via Email</h4>
             </div>
-            <form class = "card-section" action="/send-invoice-email" method = "post" enctype = "multipart/form-data">
+            <form class = "card-section invoice-form" action="/send-invoice-email" method = "post" enctype = "multipart/form-data">
                 <div class="row">
                     <label for="customer-email">To:</label>
                     <input type="email" name="customer-email" id="customer-email">
@@ -116,6 +116,10 @@
                 <div class="row">
                     <label for="email-subject">Subject:</label>
                     <input type="text" name="email-subject" id="email-subject" value="Invoice <%= draftOrder.order_name %>">
+                </div>
+                <div class="row">
+                    <label for="customer-name">Customer Name:</label>
+                    <input type="text" name="customer-name" id="customer-name" placeholder="John Smith">
                 </div>
                 <div class="row">
                     <label for="email-text-area">Custom Message:</label>
@@ -134,4 +138,39 @@
     const backToDashboard = function(){
         window.location.href = `/dashboard`
     }
+
+    const formElement = document.querySelector(".invoice-form")
+    formElement.addEventListener("submit", async (event) => {
+        event.preventDefault()
+        const formData = new FormData(formElement)
+        const currentUrl = window.location.href
+        const invoiceId = new URL(currentUrl).pathname.split('/').pop();
+
+        
+        const requestBody = JSON.stringify({
+            customerEmail: formData.get("customer-email"), 
+            invoiceSubjectLine: formData.get("email-subject"),
+            customerName: formData.get("customer-name"),
+            customMessage: formData.get("email-text-area"),
+            invoiceId: invoiceId
+        })
+
+        //Make POST Request to server and show success message when finished.
+        //I'll use an alert for now but will eventually use a Toast notification.
+
+        try {
+            const request = await fetch("/send-invoice-email", {
+                method: "POST",
+                headers: { "Content-Type": "application/json"},
+                body: requestBody
+
+            })
+
+            const response = request
+            if(!response.status == 200) return
+            alert("I've sent out your invoice")
+        } catch (error) {
+            
+        }
+    })
 </script>
