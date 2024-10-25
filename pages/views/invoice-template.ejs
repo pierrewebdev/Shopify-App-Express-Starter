@@ -10,7 +10,7 @@
                 <td colspan="2">
                     <table>
                         <tr>
-                            <button data-href="#" class = "dashboard_link" onclick = "backToDashboard()"><span class="dashboard_arrow">&#10140;</span>Back to Dashbaord</button>
+                            <button data-href="#" class = "dashboard_link" onclick = "backToDashboard()"><span class="dashboard_arrow">&#10140;</span>Back to Dashboard</button>
                             <td class="title">
                                 INVOICE
                             </td>
@@ -111,7 +111,7 @@
             <form class = "card-section invoice-form" action="/send-invoice-email" method = "post" enctype = "multipart/form-data">
                 <div class="row">
                     <label for="customer-email">To:</label>
-                    <input type="email" name="customer-email" id="customer-email">
+                    <input type="email" name="customer-email" id="customer-email" placeholder = "jsmith@business.com">
                 </div>
                 <div class="row">
                     <label for="email-subject">Subject:</label>
@@ -120,6 +120,24 @@
                 <div class="row">
                     <label for="customer-name">Customer Name:</label>
                     <input type="text" name="customer-name" id="customer-name" placeholder="John Smith">
+                </div>
+                <div class="row">
+                    <label for="address">Address:</label>
+                    <input type="text" name="address" id="address" placeholder="111 Imaginary Place Rd">
+                </div>
+                <div class="row">
+                    <label for="state">State:</label>
+                    <input type="text" name="state" id="state" placeholder="New York">
+                </div>
+                <div class="row" style = "display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 2rem;">
+                    <div class="row">
+                        <label for="city">City:</label>
+                        <input type="text" name="city" id="city" placeholder="Queens">
+                    </div>
+                    <div class="row">
+                        <label for="zip">Zip Code:</label>
+                        <input type="tel" pattern="[0-9]*" max="99999" name="zip" id="zip" placeholder = "11627">
+                    </div>
                 </div>
                 <div class="row">
                     <label for="email-text-area">Custom Message:</label>
