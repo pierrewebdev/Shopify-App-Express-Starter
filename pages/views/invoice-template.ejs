@@ -164,11 +164,19 @@
         const currentUrl = window.location.href
         const invoiceId = new URL(currentUrl).pathname.split('/').pop();
 
+        const customerAddress = {
+            street: formData.get("address"),
+            state: formData.get("state"),
+            city: formData.get("city"),
+            zipCode: formData.get("zip")
+        }
+
         
         const requestBody = JSON.stringify({
             customerEmail: formData.get("customer-email"), 
             invoiceSubjectLine: formData.get("email-subject"),
             customerName: formData.get("customer-name"),
+            customerAddress: customerAddress,
             customMessage: formData.get("email-text-area"),
             invoiceId: invoiceId
         })

@@ -204,6 +204,7 @@ module.exports = {
             lineItems, 
             customerEmail,
             customerName,
+            customerAddress,
             invoiceSubjectLine, 
             customMessage 
         } = emailData

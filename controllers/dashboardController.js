@@ -62,12 +62,11 @@ module.exports = () => {
         const userRecord = await mysqlAPI.findUserById(userId)
         const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
 
-        // console.log("I received the data", req.body)
-
         const { 
           customerEmail, 
           customerName, 
-          invoiceSubjectLine, 
+          invoiceSubjectLine,
+          customerAddress, 
           customMessage, 
           invoiceId } = req.body
 
@@ -80,9 +79,12 @@ module.exports = () => {
           lineItems: draftOrderData.order_line_items,
           customerEmail: customerEmail,
           customerName: customerName,
+          customerAddress: customerAddress,
           invoiceSubjectLine: invoiceSubjectLine,
           customMessage: customMessage
         }
+
+        // console.log("EMAIL DATA", invoiceEmailData)
 
          functionTrait.sendInvoiceEmail(invoiceEmailData)
 
