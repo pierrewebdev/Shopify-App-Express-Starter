@@ -84,9 +84,9 @@ module.exports = () => {
           customMessage: customMessage
         }
 
-        // console.log("EMAIL DATA", invoiceEmailData)
+        //console.log("EMAIL DATA", invoiceEmailData)
 
-         functionTrait.sendInvoiceEmail(invoiceEmailData)
+        functionTrait.sendInvoiceEmail(invoiceEmailData)
 
       } catch(err){
           console.log ("Something went wring with sending the email", err)
