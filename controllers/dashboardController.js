@@ -77,6 +77,9 @@ module.exports = () => {
           orderName: draftOrderData.order_name,
           storeName: shopifyStore.name,
           lineItems: draftOrderData.order_line_items,
+          orderSubTotal: draftOrderData.subtotal_price,
+          orderTotal: draftOrderData.total_price,
+          orderTax: draftOrderData.total_tax,
           customerEmail: customerEmail,
           customerName: customerName,
           customerAddress: customerAddress,
@@ -84,9 +87,9 @@ module.exports = () => {
           customMessage: customMessage
         }
 
-        //console.log("EMAIL DATA", invoiceEmailData)
-
+        // console.log("EMAIL DATA", invoiceEmailData)
         functionTrait.sendInvoiceEmail(invoiceEmailData)
+        console.log("I sent out your email")
 
       } catch(err){
           console.log ("Something went wring with sending the email", err)
