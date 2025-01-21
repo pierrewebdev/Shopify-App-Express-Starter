@@ -243,7 +243,8 @@ module.exports = {
             customerAddress,
             orderSubTotal,
             orderTax,
-            orderTotal
+            orderTotal,
+            customMessage
         } = emailData
 
         const htmlEmail = `
@@ -447,6 +448,13 @@ module.exports = {
                                                 <p style="margin: 0; word-break: break-word;"><span style="word-break: break-word;">Here is an overview of your order from ${storeName}. Please use the button at the bottom of the email to complete your purchase.</span></p>
                                             </div>
                                             </td>
+                                        </tr>
+                                        <tr>
+                                          <td class="pad" style="padding-bottom:10px;padding-left:25px;padding-right:10px;padding-top:10px;">
+                                            <div style="color:#555555;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:18px;line-height:150%;text-align:left;mso-line-height-alt:27px;">
+                                                <p style="margin: 0; word-break: break-word;"><span style="word-break: break-word;">${customMessage}</span></p>
+                                            </div>
+                                          </td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -780,6 +788,9 @@ module.exports = {
                                     </table>
                                     <div class="spacer_block block-3" style="height:55px;line-height:55px;font-size:1px;"> </div>
                                     <div class="spacer_block block-4" style="height:25px;line-height:25px;font-size:1px;"> </div>
+                                    
+                                    <!-- Social Media Icons -->
+                                    <!--
                                     <table border="0" cellpadding="10" cellspacing="0" class="social_block block-5" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
                                         <tbody>
                                         <tr>
@@ -800,12 +811,14 @@ module.exports = {
                                         </tr>
                                         </tbody>
                                     </table>
+                                    -->
+
                                     <table border="0" cellpadding="0" cellspacing="0" class="paragraph_block block-6" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;" width="100%">
                                         <tbody>
                                         <tr>
                                             <td class="pad" style="padding-bottom:5px;padding-left:10px;padding-right:10px;padding-top:10px;">
                                             <div style="color:#555555;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:14px;line-height:150%;text-align:center;mso-line-height-alt:21px;">
-                                                <p style="margin: 0; word-break: break-word;">©Meisy Ltd. All Rights Reserved</p>
+                                                <p style="margin: 0; word-break: break-word;">©${storeName}. All Rights Reserved</p>
                                             </div>
                                             </td>
                                         </tr>
@@ -902,7 +915,7 @@ module.exports = {
                                 <tr>
                                     <td class="pad" style="padding-bottom:10px;padding-left:35px;padding-right:10px;padding-top:10px;">
                                     <div style="color:#555555;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:14px;line-height:120%;text-align:left;mso-line-height-alt:16.8px;">
-                                        <p style="margin: 0; word-break: break-word;">$${lineItem.price.toFixed(2)}</p>
+                                        <p style="margin: 0; word-break: break-word;">$${Number(lineItem.price).toFixed(2)}</p>
                                     </div>
                                     </td>
                                 </tr>
