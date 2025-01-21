@@ -244,7 +244,8 @@ module.exports = {
             orderSubTotal,
             orderTax,
             orderTotal,
-            customMessage
+            customMessage,
+            invoiceUrl
         } = emailData
 
         const htmlEmail = `
@@ -768,20 +769,13 @@ module.exports = {
                                         <tbody>
                                         <tr>
                                             <td class="pad">
-                                            <div align="center" class="alignment">
-                                                <!--[if mso]>
-                                                                                <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" style="height:42px;width:340px;v-text-anchor:middle;" arcsize="10%" stroke="false" fillcolor="#5563c1">
-                                                                                    <w:anchorlock/>
-                                                                                    <v:textbox inset="0px,0px,0px,0px">
-                                                                                        <center dir="false" style="color:#ffffff;font-family:Tahoma, sans-serif;font-size:16px">
-                                                                                        <![endif]-->
-                                                <div style="background-color:#5563c1;border-bottom:0px solid transparent;border-left:0px solid transparent;border-radius:4px;border-right:0px solid transparent;border-top:0px solid transparent;color:#ffffff;display:block;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:16px;font-weight:400;mso-border-alt:none;padding-bottom:5px;padding-top:5px;text-align:center;text-decoration:none;width:50%;word-break:keep-all;"><span style="word-break: break-word; padding-left: 20px; padding-right: 20px; font-size: 16px; display: inline-block; letter-spacing: normal;"><span style="word-break: break-word; line-height: 32px;">Complete your purchase</span></span></div>
-                                                <!--[if mso]>
-                                                                                        </center>
-                                                                                    </v:textbox>
-                                                                                </v:roundrect>
-                                                                                <![endif]-->
-                                            </div>
+                                                <div align="center" class="alignment">
+                                                    <a href="${invoiceUrl}" style="background-color:#5563c1;border-bottom:0px solid transparent;border-left:0px solid transparent;border-radius:4px;border-right:0px solid transparent;border-top:0px solid transparent;color:#ffffff;display:block;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:16px;font-weight:400;mso-border-alt:none;padding-bottom:5px;padding-top:5px;text-align:center;text-decoration:none;width:50%;word-break:keep-all;">
+                                                        <span style="word-break: break-word; padding-left: 20px; padding-right: 20px; font-size: 16px; display: inline-block; letter-spacing: normal;">
+                                                            <span style="word-break: break-word; line-height: 32px;">Complete your purchase</span>
+                                                        </span>
+                                                    </a>
+                                                    </div>
                                             </td>
                                         </tr>
                                         </tbody>

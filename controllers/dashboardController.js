@@ -80,6 +80,7 @@ module.exports = () => {
           orderSubTotal: draftOrderData.subtotal_price,
           orderTotal: draftOrderData.total_price,
           orderTax: draftOrderData.total_tax,
+          invoiceUrl: draftOrderData.invoice_url,
           customerEmail: customerEmail,
           customerName: customerName,
           customerAddress: customerAddress,
