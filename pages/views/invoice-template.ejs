@@ -103,7 +103,7 @@
             </tr>
         </table>
     </div>
-    <div class = "columns three">
+    <div class = "invoice-actions columns three">
         <div class="card has-sections email-box">
             <div class="card-section">
                 <h4 style = "margin-bottom: 0;">Send Invoice via Email</h4>
@@ -146,7 +146,7 @@
 
                 <div class="row" style = "display: flex; justify-content: space-between;">
                     <input class = "column five" type="submit" value="Send Invoice">
-                    <input class = "column five button secondary" type="button" value="Print Invoice">
+                    <input class = "column five button secondary print-button" type="button" value="Print Invoice">
                 </div>
             </form>
         </div>
@@ -199,5 +199,10 @@
         } catch (error) {
             
         }
+    })
+
+    const printBtn = document.querySelector(".print-button")
+    printBtn.addEventListener("click", () => {
+        window.print()
     })
 </script>

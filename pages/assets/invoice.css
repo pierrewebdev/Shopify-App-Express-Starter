@@ -126,3 +126,18 @@
         margin-left: 2rem !important;
     }
 }
+
+/*Custom CSS for Printing*/
+@media print{
+    header, .invoice-actions{
+        display: none;
+    }
+
+    .invoice-box{
+        width: 100% !important;
+    }
+
+    .dashboard_link{
+        display: none;
+    }
+}
