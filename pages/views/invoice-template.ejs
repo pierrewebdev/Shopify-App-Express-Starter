@@ -111,32 +111,32 @@
             <form class = "card-section invoice-form" action="/send-invoice-email" method = "post" enctype = "multipart/form-data">
                 <div class="row">
                     <label for="customer-email">To:</label>
-                    <input type="email" name="customer-email" id="customer-email" placeholder = "jsmith@business.com">
+                    <input type="email" name="customer-email" id="customer-email" placeholder = "jsmith@business.com" required>
                 </div>
                 <div class="row">
                     <label for="email-subject">Subject Line:</label>
-                    <input type="text" name="email-subject" id="email-subject" value="Invoice <%= draftOrder.order_name %>">
+                    <input type="text" name="email-subject" id="email-subject" value="Invoice <%= draftOrder.order_name %>" required>
                 </div>
                 <div class="row">
                     <label for="customer-name">Customer Name:</label>
-                    <input type="text" name="customer-name" id="customer-name" placeholder="John Smith">
+                    <input type="text" name="customer-name" id="customer-name" placeholder="John Smith" required>
                 </div>
                 <div class="row">
                     <label for="address">Address:</label>
-                    <input type="text" name="address" id="address" placeholder="111 Imaginary Place Rd">
+                    <input type="text" name="address" id="address" placeholder="111 Imaginary Place Rd" required>
                 </div>
                 <div class="row">
                     <label for="state">State:</label>
-                    <input type="text" name="state" id="state" placeholder="New York">
+                    <input type="text" name="state" id="state" placeholder="New York" required>
                 </div>
                 <div class="row" style = "display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 2rem;">
                     <div class="row">
                         <label for="city">City:</label>
-                        <input type="text" name="city" id="city" placeholder="Queens">
+                        <input type="text" name="city" id="city" placeholder="Queens" required>
                     </div>
                     <div class="row">
                         <label for="zip">Zip Code:</label>
-                        <input type="tel" pattern="[0-9]*" max="99999" name="zip" id="zip" placeholder = "11627">
+                        <input type="tel" pattern="[0-9]*" max="99999" name="zip" id="zip" placeholder = "11627" required>
                     </div>
                 </div>
                 <div class="row">
@@ -144,8 +144,9 @@
                     <input type="text" name="email-text-area" id="email-text-area" value="Thanks for your business!">
                 </div>
 
-                <div class="row">
-                    <input type="submit" value="Send Invoice">
+                <div class="row" style = "display: flex; justify-content: space-between;">
+                    <input class = "column five" type="submit" value="Send Invoice">
+                    <input class = "column five button secondary" type="button" value="Print Invoice">
                 </div>
             </form>
         </div>

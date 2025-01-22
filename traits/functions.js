@@ -227,6 +227,8 @@ module.exports = {
         // console.log("Mailer Send EmailParams", emailParams)
         // console.log("Mailer Send Recipients", recipients)
 
+        return
+
         await mailerSend.email.send(emailParams)
             .catch(err => {
                 console.log("There was an issue with sending the email")
