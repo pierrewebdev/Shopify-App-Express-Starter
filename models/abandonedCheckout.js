@@ -10,38 +10,35 @@ const password = config.password
 const sequelize = new Sequelize(database, username, password, config)
 
 
-class DraftOrder extends Model {
+class AbandonedCheckout extends Model {
     
 }
 
-DraftOrder.init({
+AbandonedCheckout.init({
     //model attributes
     id: {
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER
     },
-    draft_order_id: {
+    checkout_id: {
         type: DataTypes.STRING,
         notEmpty: true
     },
-    admin_graphql_api_id: {
+    checkout_url: {
         type: DataTypes.STRING,
         notEmpty: true
     },
     currency: {
         type: DataTypes.STRING
     },
-    order_name: {
+    checkout_name: {
         type: DataTypes.STRING,
         notEmpty: true
     },
-    order_line_items: {
+    checkout_line_items: {
         type: DataTypes.TEXT,
         
-    },
-    invoice_url: {
-        type: DataTypes.TEXT('medium')
     },
     total_price: {
         type: DataTypes.FLOAT
@@ -51,12 +48,6 @@ DraftOrder.init({
     },
     total_tax: {
         type: DataTypes.FLOAT
-    },
-    status: {
-        type: DataTypes.STRING
-    },
-    payment_terms: {
-        type: DataTypes.STRING
     },
     createdAt: {
         field: 'created_at',
@@ -70,10 +61,8 @@ DraftOrder.init({
 {
     // Other model options go here
     sequelize, // We need to pass the connection instance
-    modelName: 'DraftOrder', // We need to choose the Model Name (Table Name)
+    modelName: 'AbandonedCheckout', // We need to choose the Model Name (Table Name)
 },
 )
 
-// DraftOrder.sync()
-
-module.exports = DraftOrder
+module.exports = AbandonedCheckout

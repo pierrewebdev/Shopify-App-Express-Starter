@@ -10,18 +10,18 @@ const password = config.password
 const sequelize = new Sequelize(database, username, password, config)
 
 
-class DraftOrder extends Model {
+class Order extends Model {
     
 }
 
-DraftOrder.init({
+Order.init({
     //model attributes
     id: {
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER
     },
-    draft_order_id: {
+    order_id: {
         type: DataTypes.STRING,
         notEmpty: true
     },
@@ -40,9 +40,6 @@ DraftOrder.init({
         type: DataTypes.TEXT,
         
     },
-    invoice_url: {
-        type: DataTypes.TEXT('medium')
-    },
     total_price: {
         type: DataTypes.FLOAT
     },
@@ -52,7 +49,7 @@ DraftOrder.init({
     total_tax: {
         type: DataTypes.FLOAT
     },
-    status: {
+    financial_status: {
         type: DataTypes.STRING
     },
     payment_terms: {
@@ -70,10 +67,10 @@ DraftOrder.init({
 {
     // Other model options go here
     sequelize, // We need to pass the connection instance
-    modelName: 'DraftOrder', // We need to choose the Model Name (Table Name)
+    modelName: 'Order', // We need to choose the Model Name (Table Name)
 },
 )
 
 // DraftOrder.sync()
 
-module.exports = DraftOrder
+module.exports = Order
