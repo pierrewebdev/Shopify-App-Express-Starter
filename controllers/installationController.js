@@ -5,7 +5,8 @@ module.exports = () => {
     const mysqlAPI = require("../src/mysql-api")
     const env = require('dotenv').config()
 
-    var accessScopes = 'read_products,write_orders,write_returns,read_customers,write_fulfillments, read_draft_orders';
+    var accessScopes = 'read_products,read_customers,read_draft_orders,write_draft_orders, read_orders, write_orders';
+    
     var clientId = process.env.SHOPIFY_CLIENT_ID;
     var clientSecret = process.env.SHOPIFY_CLIENT_SECRET;
     var redirectUri = process.env.APP_URL+'shopify/auth/redirect';
