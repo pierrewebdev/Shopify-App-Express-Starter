@@ -4,6 +4,8 @@ const ShopifyStore = require("./shopifystore.js")
 const { Sequelize } = require("sequelize")
 const UserStore = require("./userstore.js")
 const DraftOrder = require("./draftorder.js")
+const Order = require("./order.js")
+const AbandonedCheckout = require("./abandonedCheckout.js")
 
 const appEnvironment = process.env.NODE_ENV || "development";
 const config = require('../config.json')[appEnvironment];
@@ -37,10 +39,28 @@ async function setupModels(){
         foreignKey: "store_id"
     })
 
+    ShopifyStore.hasMany(Order, {
+        foreignKey: "store_id"
+    })
+    
+    Order.belongsTo(ShopifyStore, {
+        foreignKey: "store_id"
+    })
+
+    ShopifyStore.hasMany(AbandonedCheckout, {
+        foreignKey: "store_id"
+    })
+    
+    AbandonedCheckout.belongsTo(ShopifyStore, {
+        foreignKey: "store_id"
+    })
+
     User.sync()
     ShopifyStore.sync()
     UserStore.sync()
     DraftOrder.sync()
+    Order.sync()
+    AbandonedCheckout.sync()
 }
 
 module.exports = setupModels

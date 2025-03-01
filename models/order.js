@@ -21,10 +21,6 @@ Order.init({
         primaryKey: true,
         type: DataTypes.INTEGER
     },
-    order_id: {
-        type: DataTypes.STRING,
-        notEmpty: true
-    },
     admin_graphql_api_id: {
         type: DataTypes.STRING,
         notEmpty: true
@@ -37,8 +33,7 @@ Order.init({
         notEmpty: true
     },
     order_line_items: {
-        type: DataTypes.TEXT,
-        
+        type: DataTypes.TEXT
     },
     total_price: {
         type: DataTypes.FLOAT
