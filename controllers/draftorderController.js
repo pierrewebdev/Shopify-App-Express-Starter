@@ -12,8 +12,11 @@ module.exports = () => {
         updateAllDraftOrders: async function (req, res) {
             //Make a request to Shopify API to pull all draft orders and then use the draftorder Model to store them in the db
 
-            const storeDomain = req.headers['x-shopify-shop-domain']
-            const shopifyStore = await mysqlAPI.getStoreByDomain(storeDomain)
+            const userId = req.session.user.id
+            const userRecord = await mysqlAPI.findUserById(userId)
+            const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
+
+            console.log("Store Domain", Object.keys(shopifyStore))
 
             //API Request for draft orders
             const headers = getApIHeaders(shopifyStore.access_token);

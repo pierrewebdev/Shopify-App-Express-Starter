@@ -5,14 +5,101 @@
 <section>
     <div class="columns has-sections">
         <ul class="tabs">
-            <li class="active"><a href="#">All</a></li>
-            <li><a href="#">Incomplete</a></li>
-            <li><a href="#">Complete</a></li>
+            <li class="active"><a href="#">Draft Orders</a></li>
+            <li><a href="#">Orders</a></li>
+            <li><a href="#">Abandoned Checkouts</a></li>
         </ul>
     </div>
 </section>
 
 <!--Table of Draft Orders-->
 <%- include('partials/draft-order-table')  %>
+
+<!--Button to test Order and Draft Order Request-->
+<div class = "column twelve" style = "margin-bottom: 2.5rem; margin-top: 4rem;">
+    <button class = "test-endpoint-btn button" onclick = "testdraftOrder()">
+        Test Draft Order Sync
+    </button>
+</div>
+
+<div class = "column twelve" style = "margin-bottom: 2.5rem;" onclick = "testOrder()">
+    <button class = "test-endpoint-btn">
+        Test Order Sync
+    </button>
+</div>
+
+<div class = "column twelve" style = "margin-bottom: 2rem;" onclick = "testAbandonedCheckout()">
+    <button class = "test-endpoint-btn">
+        Test Abandoned Checkout Sync
+    </button>
+</div>
+
+<script>
+    const testdraftOrder = async () => {
+        const requestBody = JSON.stringify({})
+
+        //Make POST Request to server and show success message when finished.
+        //I'll use an alert for now but will eventually use a Toast notification.
+
+        try {
+            const request = await fetch("/sync-draft-orders", {
+                method: "POST",
+                headers: { "Content-Type": "application/json"},
+                body: requestBody
+
+            })
+
+            const response = request
+            if(!response.status == 200) return
+            alert("I've sent out your draft order test")
+        } catch (error) {
+            
+        }
+    }
+
+    const testOrder = async () => {
+        const requestBody = JSON.stringify({})
+
+        //Make POST Request to server and show success message when finished.
+        //I'll use an alert for now but will eventually use a Toast notification.
+
+        try {
+            const request = await fetch("/test-order-req", {
+                method: "POST",
+                headers: { "Content-Type": "application/json"},
+                body: requestBody
+
+            })
+
+            const response = request
+            if(!response.status == 200) return
+            alert("I've sent out your draft order test")
+        } catch (error) {
+            
+        }
+    }
+
+    const testAbandonedCheckout = async () => {
+        const requestBody = JSON.stringify({})
+
+        //Make POST Request to server and show success message when finished.
+        //I'll use an alert for now but will eventually use a Toast notification.
+
+        try {
+            const request = await fetch("/test-checkout-req", {
+                method: "POST",
+                headers: { "Content-Type": "application/json"},
+                body: requestBody
+
+            })
+
+            const response = request
+            if(!response.status == 200) return
+            alert("I've sent out your draft order test")
+        } catch (error) {
+            
+        }
+    }
+</script>
 
 <!-- App Main Dashboard Ends Here-->

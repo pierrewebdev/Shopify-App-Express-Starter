@@ -10,6 +10,8 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     const dashboardController = require('./controllers/dashboardController')();
     const draftorderController = require('./controllers/draftorderController')();
     const webhooksController = require('./controllers/webhooksController')();
+    const orderController = require('./controllers/orderController')();
+    const abandonedCheckoutController = require('./controllers/abandonedCheckoutController')();
 
     /** Do whatever with this middleware */
     //apiAuth is not currently being used
@@ -81,4 +83,9 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     const functionTrait = require('./traits/functions');
     app.post("/send-invoice-email", dashboardController.sendInvoiceEmail)
 
+    //Order Routes
+    app.post("/test-order-req", orderController.updateAllOrders)
+
+    //Abandoned Checkout Routes
+    app.post("/test-checkout-req", abandonedCheckoutController.updateAllabandonedCheckouts)
 }
