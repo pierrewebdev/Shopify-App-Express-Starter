@@ -57,7 +57,7 @@ User.init({
 {
     // Other model options go here
     sequelize, // We need to pass the connection instance
-    tableName: 'User', // We need to choose the Model Name (Table Name)
+    tableName: 'Users', // We need to choose the Model Name (Table Name)
 },
 )
 
