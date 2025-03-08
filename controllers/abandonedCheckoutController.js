@@ -25,19 +25,17 @@ module.exports = () => {
                      abandonedCheckouts(first:10, query: "not_recovered"){
                         edges{
                         node{    
-                            name
                             abandonedCheckoutUrl
                             id
                             customer{
                                 firstName
                                 email
-                                emailMarketingConsent
+                                emailMarketingConsent{
+                                    marketingState
+                                }
 
                             }
                             id
-                            invoiceUrl
-                            status
-                            currencyCode
                             subtotalPriceSet{
                                 shopMoney{
                                     amount
@@ -56,20 +54,13 @@ module.exports = () => {
                             lineItems(first: 10){
                                 edges{
                                     node{
-                                        name
                                         quantity
                                         id
-                                        discountedTotalSet{
-                                            shopMoney{
-                                                amount
-                                            }
-                                        }
                                         image{
                                             url
                                         }
                                     }
                                 }
-                            }
                             }
                         }
                     }
@@ -83,9 +74,9 @@ module.exports = () => {
 
                 //const orderRequest = await shopifyAPI("GET",endpoint, headers)
                 //const abandonedCheckouts = gqlReq.respBody.data.abandonedCheckouts.edges
-                const abandonedCheckouts = R.path(["respBody", "data"])(gqlReq)
+                const abandonedCheckouts = R.path(["respBody", "data", "abandonedCheckouts"])(gqlReq)
 
-                console.log(abandonedCheckouts)
+                console.log(gqlReq.respBody)
 
                 //abandonedCheckouts.edges[0].node.lineItems.edges[0].node
 

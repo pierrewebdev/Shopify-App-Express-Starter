@@ -64,6 +64,9 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.get('/shopify/auth', installationController.index);
     app.get('/shopify/auth/redirect', installationController.redirect);
 
+    //Check app access scopes for development purposes
+    app.get("/check-access-scopes", installationController.checkScopes)
+
     // Dashboard Routes
     app.get('/dashboard', RequireAuth, dashboardController.index);
     app.get('/invoice/:draft_id', RequireAuth, dashboardController.invoice);
@@ -88,4 +91,5 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
 
     //Abandoned Checkout Routes
     app.post("/test-checkout-req", abandonedCheckoutController.updateAllabandonedCheckouts)
+
 }

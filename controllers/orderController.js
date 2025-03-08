@@ -28,10 +28,6 @@ module.exports = () => {
                             name
                             id
                             displayFinancialStatus
-                            paymentTerms{
-                                paymentTermsName
-                                paymentTermsType
-                            }
                             currencyCode
                             subtotalPriceSet{
                                 shopMoney{
@@ -79,9 +75,6 @@ module.exports = () => {
 
                 console.log("result of GQL Request", orders)
 
-                //draftOrders.edges[0].node.lineItems.edges[0].node
-
-                //find db record for each draft order and then update each
 
                 //console.log("I've successfully updated all records in db")
 

@@ -4,6 +4,11 @@ module.exports = () => {
     const requestTrait = require('../traits/requests');
     const mysqlAPI = require("../src/mysql-api")
     const env = require('dotenv').config()
+    const R = require("ramda")
+
+    const getApIHeaders = functionTrait.getShopifyAPIHeadersForStore
+    const apiEndpoint = functionTrait.getShopifyAPIURLForStore
+    const shopifyAPI = require("../traits/requests").makeAnAPICallToShopify
 
     var accessScopes = 'read_products,read_customers,read_draft_orders,write_draft_orders, read_orders, write_orders';
     
@@ -106,6 +111,47 @@ module.exports = () => {
                     'message': 'Invalid request.',
                     'request': req.query
                 });
+            }
+        },
+
+        checkScopes: async function(req,res){
+            const userId = req.session.user.id
+            const userRecord = await mysqlAPI.findUserById(userId)
+            const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
+
+            //API Request for draft orders
+            const headers = getApIHeaders(shopifyStore.access_token);
+            const endpoint = apiEndpoint(`graphql.json`, shopifyStore)
+
+            try {
+                const scopesQuery = `query GetAppAccessScopes {
+                    appInstallation {
+                        accessScopes {
+                        handle
+                        description
+                        }
+                    }
+                }`
+
+                const payload = JSON.stringify({
+                    query: scopesQuery
+                })
+
+                const gqlReq = await shopifyAPI("POST",endpoint, headers, payload)
+                const scopes = R.path(["respBody", "data", "appInstallation", "accessScopes"])(gqlReq)
+
+                console.log("result of GQL Request", scopes)
+
+                //draftOrders.edges[0].node.lineItems.edges[0].node
+
+                //find db record for each draft order and then update each
+
+                //console.log("I've successfully updated all records in db")
+
+            } catch (error) {
+                console.error(`There was an error with pulling the draft orders \n ${error}`)
+            } finally {
+                res.sendStatus(200)
             }
         }
     }

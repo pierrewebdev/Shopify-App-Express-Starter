@@ -63,7 +63,7 @@ module.exports = {
     getShopifyAPIURLForStore(path, store) {
         var API_VERSION = process.env.SHOPIFY_API_VERSION;
         if (API_VERSION.length < 1)
-            API_VERSION = '2024-01';
+            API_VERSION = '2025-01';
         return `https://${store.myshopify_domain}/admin/api/${API_VERSION}/${path}`;
     },
 

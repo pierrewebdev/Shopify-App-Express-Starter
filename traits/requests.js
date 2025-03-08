@@ -1,10 +1,13 @@
 const axios = require('axios');
+const { head } = require('ramda');
     
 module.exports = {
     makeAnAPICallToShopify: async function (method = 'GET', endpoint, headers, payload = {}) {
         // console.log("REQUEST DATA")
         // console.log(method, "\n", endpoint, "\n", headers, "\n", payload)
         let reqResult = null;
+
+        console.log("Request Headers", endpoint)
         try {
             if(method == 'GET') {
                 reqResult = await axios.get(endpoint, {headers: headers})
