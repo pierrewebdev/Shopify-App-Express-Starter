@@ -7,7 +7,6 @@ module.exports = {
         // console.log(method, "\n", endpoint, "\n", headers, "\n", payload)
         let reqResult = null;
 
-        console.log("Request Headers", endpoint)
         try {
             if(method == 'GET') {
                 reqResult = await axios.get(endpoint, {headers: headers})

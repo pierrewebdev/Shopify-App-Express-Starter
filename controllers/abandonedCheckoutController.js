@@ -21,47 +21,46 @@ module.exports = () => {
             const endpoint = apiEndpoint(`graphql.json`, shopifyStore)
 
             try {
-                const abandonedCheckoutsQuery = `query GetAbandonedCheckouts{
-                     abandonedCheckouts(first:10, query: "not_recovered"){
-                        edges{
-                        node{    
+                const abandonedCheckoutsQuery = `query GetAbandonedCheckouts {
+                    abandonedCheckouts(first: 10, query: "not_recovered") {
+                        edges {
+                        node {
                             abandonedCheckoutUrl
                             id
-                            customer{
-                                firstName
-                                email
-                                emailMarketingConsent{
+                            customer {
+                            firstName
+                            email
+                                emailMarketingConsent {
                                     marketingState
                                 }
-
                             }
-                            id
-                            subtotalPriceSet{
-                                shopMoney{
-                                    amount
+                            subtotalPriceSet {
+                            shopMoney {
+                                amount
+                            }
+                            }
+                            totalPriceSet {
+                            shopMoney {
+                                amount
+                            }
+                            }
+                            totalTaxSet {
+                            shopMoney {
+                                amount
+                            }
+                            }
+                            lineItems(first: 10) {
+                            edges {
+                                node {
+                                quantity
+                                id
+                                image {
+                                    url
+                                }
                                 }
                             }
-                            totalPriceSet{
-                                shopMoney{
-                                    amount
-                                }
                             }
-                            totalTaxSet{
-                                shopMoney{
-                                    amount
-                                }
-                            }
-                            lineItems(first: 10){
-                                edges{
-                                    node{
-                                        quantity
-                                        id
-                                        image{
-                                            url
-                                        }
-                                    }
-                                }
-                            }
+                        }
                         }
                     }
                 }`
@@ -74,9 +73,9 @@ module.exports = () => {
 
                 //const orderRequest = await shopifyAPI("GET",endpoint, headers)
                 //const abandonedCheckouts = gqlReq.respBody.data.abandonedCheckouts.edges
-                const abandonedCheckouts = R.path(["respBody", "data", "abandonedCheckouts"])(gqlReq)
+                const abandonedCheckouts = R.path(["respBody", "data", "abandonedCheckouts", "edges"])(gqlReq)
 
-                console.log(gqlReq.respBody)
+                console.log(abandonedCheckouts)
 
                 //abandonedCheckouts.edges[0].node.lineItems.edges[0].node
 
