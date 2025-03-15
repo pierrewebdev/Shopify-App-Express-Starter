@@ -21,7 +21,7 @@ AbandonedCheckout.init({
         primaryKey: true,
         type: DataTypes.INTEGER
     },
-    checkout_id: {
+    shopify_api_id: {
         type: DataTypes.STRING,
         notEmpty: true
     },

@@ -21,11 +21,7 @@ DraftOrder.init({
         primaryKey: true,
         type: DataTypes.INTEGER
     },
-    draft_order_id: {
-        type: DataTypes.STRING,
-        notEmpty: true
-    },
-    admin_graphql_api_id: {
+    shopify_api_id: {
         type: DataTypes.STRING,
         notEmpty: true
     },

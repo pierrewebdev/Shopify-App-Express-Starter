@@ -6,6 +6,7 @@ const User = require("../models/user.js")
 const ShopifyStores = require("../models/shopifystore.js")
 const UserStores = require("../models/userstore.js")
 const DraftOrder = require("../models/draftorder.js")
+const Customer = require("../models/customer.js")
 
 async function findUserForStoreId(store) {
     return UserStores.findOne({where: { store_id: store.id }, order: [ ['id', 'DESC'] ], raw: true});
@@ -124,17 +125,18 @@ async function updateOrCreateOnModel (Model, where, newItem) {
 }
 
 //uses the draft order id from Shopify now the primary key of the Draft Order DB
-async function findDraftOrderById(draftOrderId) {
+async function findDraftOrderById(id) {
     return await DraftOrder.findOne({
         where: {
-            draft_order_id: draftOrderId
+            shopify_api_id: id
         }
     })
 }
 
-async function createDraftOrderRecord(draftOrder, storeRecord) {
+async function createDraftOrderRecord(draftOrder, customerRecord) {
+    console.log(`This is the Draft ID: ${draftOrder.id}`)
     return DraftOrder.create({
-       draft_order_id: draftOrder.id,
+       shopify_api_id: draftOrder.id,
        currency: draftOrder.currency,
        order_name: draftOrder.name,
        order_line_items: JSON.stringify(draftOrder.line_items),
@@ -143,12 +145,29 @@ async function createDraftOrderRecord(draftOrder, storeRecord) {
        subtotal_price: draftOrder.subtotal_price,
        total_tax: draftOrder.total_tax,
        status: draftOrder.status,
-       store_id: storeRecord.id
+       customer_id: customerRecord.id
     })
 }
 
 async function getAllDraftOrders() {
     return await DraftOrder.findAll()
+}
+
+async function findCustomerById(id){
+    return await Customer.findOne({
+        where: {
+            shopify_api_id: id
+        }
+    })
+}
+
+async function createCustomerRecord(customer, storeRecord) {
+    return Customer.create({
+       first_name: customer.firstName,
+       email: customer.email,
+       shopify_api_id: customer.id,
+       store_id: storeRecord.id
+    })
 }
 
 module.exports = {
@@ -167,5 +186,7 @@ module.exports = {
     createUserRecord,
     findDraftOrderById,
     createDraftOrderRecord,
-    getAllDraftOrders
+    getAllDraftOrders,
+    findCustomerById,
+    createCustomerRecord
 }

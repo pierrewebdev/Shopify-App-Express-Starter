@@ -16,8 +16,6 @@ module.exports = () => {
             const userRecord = await mysqlAPI.findUserById(userId)
             const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
 
-            console.log("Store Domain", Object.keys(shopifyStore))
-
             //API Request for draft orders
             const headers = getApIHeaders(shopifyStore.access_token);
             const endpoint = apiEndpoint(`graphql.json`, shopifyStore)
@@ -26,47 +24,52 @@ module.exports = () => {
                 const draftOrdersQuery = `query GetDraftOrders{
                      draftOrders(first:10){
                         edges{
-                        node{    
-                            name
-                            id
-                            invoiceUrl
-                            status
-                            currencyCode
-                            subtotalPriceSet{
-                                shopMoney{
-                                    amount
-                                }
-                            }
-                            totalPriceSet{
-                                shopMoney{
-                                    amount
-                                }
-                            }
-                            totalTaxSet{
-                                shopMoney{
-                                    amount
-                                }
-                            }
-                            lineItems(first: 10){
-                                edges{
-                                    node{
-                                        name
-                                        quantity
-                                        id
-                                        discountedTotalSet{
-                                            shopMoney{
-                                                amount
-                                            }
-                                        }
-                                        image{
-                                            url
-                                        }
+                            node{    
+                                name
+                                id
+                                invoiceUrl
+                                status
+                                currencyCode
+                                subtotalPriceSet{
+                                    shopMoney{
+                                        amount
                                     }
                                 }
-                            }
+                                totalPriceSet{
+                                    shopMoney{
+                                        amount
+                                    }
+                                }
+                                totalTaxSet{
+                                    shopMoney{
+                                        amount
+                                    }
+                                }
+                                lineItems(first: 10){
+                                    edges{
+                                        node{
+                                            name
+                                            quantity
+                                            id
+                                            discountedTotalSet{
+                                                shopMoney{
+                                                    amount
+                                                }
+                                            }
+                                            image{
+                                                url
+                                            }
+                                        }
+                                    }
+                                } 
+                                customer {
+                                    id
+                                    firstName
+                                    email
+                                }
+                                }
                             }
                         }
-                    }
                 }`
 
                 const payload = JSON.stringify({
@@ -74,12 +77,8 @@ module.exports = () => {
                 })
 
                 const gqlReq = await shopifyAPI("POST",endpoint, headers, payload)
-
-                //const orderRequest = await shopifyAPI("GET",endpoint, headers)
-                //const draftOrders = gqlReq.respBody.data.draftOrders.edges
                 const draftOrders = R.path(["respBody", "data", "draftOrders", "edges"])(gqlReq)
 
-                //draftOrders.edges[0].node.lineItems.edges[0].node
 
                 //find db record for each draft order and then update each
                 for (const draftOrder of draftOrders){
@@ -88,7 +87,9 @@ module.exports = () => {
                     const orderData = R.path(["node"])(draftOrder)
                     const formattedDraftData = {}
 
-                    formattedDraftData.id = helperMethods.extractIdFromGid(orderData.id)
+                    console.log(`I'm on this order: ${orderData.name} and this is the id: ${orderData.id}`)
+
+                    formattedDraftData.id = orderData.id
                     formattedDraftData.name = orderData.name
                     formattedDraftData.invoice_url = orderData.invoiceUrl
                     formattedDraftData.status = orderData.status
@@ -97,6 +98,8 @@ module.exports = () => {
                     formattedDraftData.total_price = R.path(["shopMoney", "amount"])(orderData.totalPriceSet)
                     formattedDraftData.subtotal_price = R.path(["shopMoney", "amount"])(orderData.subtotalPriceSet)
 
+                    formattedDraftData.customer = orderData.customer
+
                     const lineItems = R.pipe(
                         R.path(["edges"]),
                         R.map(obj => obj.node),
@@ -104,7 +107,7 @@ module.exports = () => {
                             const tmp = {
                                 name: lineItem.name,
                                 quantity: lineItem.quantity,
-                                shopifyId: helperMethods.extractIdFromGid(lineItem.id),
+                                shopifyId: lineItem.id,
                                 price: lineItem.discountedTotalSet.shopMoney.amount,
                                 imageUrl: lineItem.image.url
                             }
@@ -116,25 +119,36 @@ module.exports = () => {
 
                     formattedDraftData.line_items = lineItems
 
-                    const draftRecord = await mysqlAPI.findDraftOrderById(formattedDraftData.id)
+                    const associatedCustomer = formattedDraftData.customer
 
+                    //Skip to next draft order if there is no customer on current draft
+                    if(!associatedCustomer) continue
 
-                    if(!draftRecord){
-                        await mysqlAPI.createDraftOrderRecord(formattedDraftData, shopifyStore)
-                    } else{
-                        draftRecord.set({
-                            draft_order_id: formattedDraftData.id,
-                            currency: formattedDraftData.currency,
-                            order_name: formattedDraftData.name,
-                            order_line_items: JSON.stringify(formattedDraftData.line_items),
-                            invoice_url: formattedDraftData.invoice_url,
-                            total_price: formattedDraftData.total_price,
-                            subtotal_price: formattedDraftData.subtotal_price,
-                            total_tax: formattedDraftData.total_tax,
-                            status: formattedDraftData.status
-                        })
-                        await draftRecord.save()
+                    let customerRecord = await mysqlAPI.findCustomerById(associatedCustomer.id)
+
+                    if(!customerRecord){
+                        customerRecord = await mysqlAPI.createCustomerRecord(associatedCustomer, shopifyStore)
                     }
+
+                   const draftRecord = await mysqlAPI.findDraftOrderById(formattedDraftData.id)
+                   console.log("Is Draft Record Truthy? ", !!draftRecord)
+                   if(!draftRecord){
+                        console.log("I made it in here")
+                       await mysqlAPI.createDraftOrderRecord(formattedDraftData, customerRecord)
+                   } else{
+                       draftRecord.set({
+                           currency: formattedDraftData.currency,
+                           order_name: formattedDraftData.name,
+                           order_line_items: JSON.stringify(formattedDraftData.line_items),
+                           invoice_url: formattedDraftData.invoice_url,
+                           total_price: formattedDraftData.total_price,
+                           subtotal_price: formattedDraftData.subtotal_price,
+                           total_tax: formattedDraftData.total_tax,
+                           status: formattedDraftData.status
+                       })
+                       await draftRecord.save()
+                   }
+
                 }
 
                 console.log("I've successfully updated all records in db")

@@ -25,14 +25,15 @@ module.exports = () => {
                     abandonedCheckouts(first: 10, query: "not_recovered") {
                         edges {
                         node {
+                            name
                             abandonedCheckoutUrl
                             id
                             customer {
-                            firstName
-                            email
-                                emailMarketingConsent {
-                                    marketingState
-                                }
+                                firstName
+                                email
+                                    emailMarketingConsent {
+                                        marketingState
+                                    }
                             }
                             subtotalPriceSet {
                             shopMoney {

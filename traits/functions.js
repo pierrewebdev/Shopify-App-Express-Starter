@@ -129,8 +129,6 @@ module.exports = {
         var headers = this.getShopifyAPIHeadersForStore(accessToken);
         var response = await RequestTrait.makeAnAPICallToShopify('GET', endpoint, headers);
 
-        console.log("HEADERS", headers)
-
         if (response.status)
             return response.respBody.shop;
 
