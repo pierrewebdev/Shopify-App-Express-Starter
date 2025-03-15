@@ -16,9 +16,19 @@ module.exports = () => {
 
         const draftOrders = await mysqlAPI.getAllDraftOrders()
 
+        const promiseArr = draftOrders.map(async draft => {
+          const customerRecord = await mysqlAPI.findCustomerById(draft.customer_id)
+          const tmp = {...draft.dataValues}
+
+          tmp.customer = customerRecord.dataValues
+          return tmp
+        })
+
+        const draftOrdersWithCustomers = await Promise.all(promiseArr)
+
         return res.render("index", {
             storeName: shopifyStore.name,
-            draftOrders: draftOrders
+            draftOrders: draftOrdersWithCustomers
         })
         
       } catch (error) {
@@ -39,6 +49,7 @@ module.exports = () => {
         const shopifyDraftOrderId = req.params.draft_id
 
         const draftOrderRecord = await mysqlAPI.findDraftOrderById(shopifyDraftOrderId)
+        console.log(draftOrderRecord)
 
         return res.render("invoice-template", {
             storeName: shopifyStore.name,

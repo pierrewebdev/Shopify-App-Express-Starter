@@ -3,8 +3,7 @@
         <thead>
             <tr>
                 <th>Order Name</th>
-                <th>Order ID</th>
-                <!-- <th>Customer</th> -->
+                <th>Customer</th>
                 <th>Payment Status</th>
                 <th>Currency</th>
                 <th>Total</th>
@@ -13,9 +12,9 @@
         
         <tbody>
             <% for (let draft of draftOrders) { %>
-                <tr data-href="#" onclick = "openInvoiceTemplate(`<%= draft.draft_order_id %>`)">
+                <tr data-href="#" onclick = "openInvoiceTemplate(`<%= draft.id %>`)">
                     <td><%= draft.order_name %></td>
-                    <td><%= draft.draft_order_id %></td>
+                    <td><%= draft.customer.first_name %></td>
                     <td><%= draft.status.toLowerCase() %></td>
                     <td><%= draft.currency %></td>
                     <td>$<%= draft.total_price %></td>

@@ -124,14 +124,12 @@ module.exports = () => {
                     //Skip to next draft order if there is no customer on current draft
                     if(!associatedCustomer) continue
 
-                    let customerRecord = await mysqlAPI.findCustomerById(associatedCustomer.id)
+                    let customerRecord = await mysqlAPI.findCustomerByShopifyId(associatedCustomer.id)
 
                     if(!customerRecord){
                         customerRecord = await mysqlAPI.createCustomerRecord(associatedCustomer, shopifyStore)
                     }
 
-                   const draftRecord = await mysqlAPI.findDraftOrderById(formattedDraftData.id)
-                   console.log("Is Draft Record Truthy? ", !!draftRecord)
                    if(!draftRecord){
                         console.log("I made it in here")
                        await mysqlAPI.createDraftOrderRecord(formattedDraftData, customerRecord)

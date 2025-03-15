@@ -156,6 +156,14 @@ async function getAllDraftOrders() {
 async function findCustomerById(id){
     return await Customer.findOne({
         where: {
+            id: id
+        }
+    })
+}
+
+async function findCustomerByShopifyId(id){
+    return await Customer.findOne({
+        where: {
             shopify_api_id: id
         }
     })
@@ -188,5 +196,6 @@ module.exports = {
     createDraftOrderRecord,
     getAllDraftOrders,
     findCustomerById,
+    findCustomerByShopifyId,
     createCustomerRecord
 }
