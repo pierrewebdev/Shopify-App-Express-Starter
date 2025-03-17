@@ -29,9 +29,6 @@ AbandonedCheckout.init({
         type: DataTypes.STRING,
         notEmpty: true
     },
-    currency: {
-        type: DataTypes.STRING
-    },
     checkout_name: {
         type: DataTypes.STRING,
         notEmpty: true

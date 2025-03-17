@@ -202,6 +202,21 @@ async function createOrderRecord(order, customerRecord) {
     })
 }
 
+async function createCheckoutRecord(checkout, customerRecord) {
+    console.log(`This is the Draft ID: ${checkout.id}`)
+    return checkout.create({
+       shopify_api_id: checkout.id,
+       currency: checkout.currency,
+       checkout_name: checkout.name,
+       checkout_line_items: JSON.stringify(checkout.line_items),
+       checkout_url: checkout.checkout_url,
+       total_price: checkout.total_price,
+       subtotal_price: checkout.subtotal_price,
+       total_tax: checkout.total_tax,
+       customer_id: customerRecord.id
+    })
+}
+
 module.exports = {
     findUserForStoreId,
     findUserById,
@@ -223,5 +238,6 @@ module.exports = {
     findCustomerByShopifyId,
     createCustomerRecord,
     createOrderRecord,
-    findOrderById
+    findOrderById,
+    createCheckoutRecord
 }

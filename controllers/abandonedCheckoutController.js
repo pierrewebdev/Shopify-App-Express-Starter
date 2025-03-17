@@ -71,72 +71,61 @@ module.exports = () => {
                 })
 
                 const gqlReq = await shopifyAPI("POST",endpoint, headers, payload)
-
-                //const orderRequest = await shopifyAPI("GET",endpoint, headers)
-                //const abandonedCheckouts = gqlReq.respBody.data.abandonedCheckouts.edges
                 const abandonedCheckouts = R.path(["respBody", "data", "abandonedCheckouts", "edges"])(gqlReq)
 
-                console.log(abandonedCheckouts)
+                for (const checkout of abandonedCheckouts){
 
-                //abandonedCheckouts.edges[0].node.lineItems.edges[0].node
+                    const checkoutData = R.path(["node"])(checkout)
+                    const formattedCheckoutData = {}
 
-                //find db record for each draft order and then update each
-                // for (const draftOrder of abandonedCheckouts){
-                //     //Add images to the line items array on the draft order
+                    formattedCheckoutData.id = checkoutData.id
+                    formattedCheckoutData.name = checkoutData.name
+                    formattedCheckoutData.checkout_url = checkoutData.invoiceUrl
+                    formattedCheckoutData.status = checkoutData.status
+                    formattedCheckoutData.currency = checkoutData.currencyCode
+                    formattedCheckoutData.total_tax = R.path(["shopMoney", "amount"])(checkoutData.totalTaxSet)
+                    formattedCheckoutData.total_price = R.path(["shopMoney", "amount"])(checkoutData.totalPriceSet)
+                    formattedCheckoutData.subtotal_price = R.path(["shopMoney", "amount"])(checkoutData.subtotalPriceSet)
 
-                //     const orderData = R.path(["node"])(draftOrder)
-                //     const formattedDraftData = {}
+                    const lineItems = R.pipe(
+                        R.path(["edges"]),
+                        R.map(obj => obj.node),
+                        R.map((lineItem) => {
+                            const tmp = {
+                                name: lineItem.name,
+                                quantity: lineItem.quantity,
+                                shopifyId: helperMethods.extractIdFromGid(lineItem.id),
+                                price: lineItem.discountedTotalSet.shopMoney.amount,
+                                imageUrl: lineItem.image.url
+                            }
 
-                //     formattedDraftData.id = helperMethods.extractIdFromGid(orderData.id)
-                //     formattedDraftData.name = orderData.name
-                //     formattedDraftData.invoice_url = orderData.invoiceUrl
-                //     formattedDraftData.status = orderData.status
-                //     formattedDraftData.currency = orderData.currencyCode
-                //     formattedDraftData.total_tax = R.path(["shopMoney", "amount"])(orderData.totalTaxSet)
-                //     formattedDraftData.total_price = R.path(["shopMoney", "amount"])(orderData.totalPriceSet)
-                //     formattedDraftData.subtotal_price = R.path(["shopMoney", "amount"])(orderData.subtotalPriceSet)
+                            return tmp
+                        })
 
-                //     const lineItems = R.pipe(
-                //         R.path(["edges"]),
-                //         R.map(obj => obj.node),
-                //         R.map((lineItem) => {
-                //             const tmp = {
-                //                 name: lineItem.name,
-                //                 quantity: lineItem.quantity,
-                //                 shopifyId: helperMethods.extractIdFromGid(lineItem.id),
-                //                 price: lineItem.discountedTotalSet.shopMoney.amount,
-                //                 imageUrl: lineItem.image.url
-                //             }
+                    )(checkoutData.lineItems)
 
-                //             return tmp
-                //         })
+                    formattedCheckoutData.line_items = lineItems
 
-                //     )(orderData.lineItems)
-
-                //     formattedDraftData.line_items = lineItems
-
-                //     const draftRecord = await mysqlAPI.findDraftOrderById(formattedDraftData.id)
+                    const checkoutRecord = await mysqlAPI.findDraftOrderById(formattedCheckoutData.id)
 
 
-                //     if(!draftRecord){
-                //         await mysqlAPI.createDraftOrderRecord(formattedDraftData, shopifyStore)
-                //     } else{
-                //         draftRecord.set({
-                //             draft_order_id: formattedDraftData.id,
-                //             currency: formattedDraftData.currency,
-                //             order_name: formattedDraftData.name,
-                //             order_line_items: JSON.stringify(formattedDraftData.line_items),
-                //             invoice_url: formattedDraftData.invoice_url,
-                //             total_price: formattedDraftData.total_price,
-                //             subtotal_price: formattedDraftData.subtotal_price,
-                //             total_tax: formattedDraftData.total_tax,
-                //             status: formattedDraftData.status
-                //         })
-                //         await draftRecord.save()
-                //     }
-                // }
+                    if(!checkoutRecord){
+                        await mysqlAPI.createDraftOrderRecord(formattedCheckoutData, shopifyStore)
+                    } else{
+                        checkoutRecord.set({
+                            shopify_api_id: formattedCheckoutData.id,
+                            checkout_name: formattedCheckoutData.name,
+                            checkout_line_items: JSON.stringify(formattedCheckoutData.line_items),
+                            checkout_url: formattedCheckoutData.checkout_url,
+                            total_price: formattedCheckoutData.total_price,
+                            subtotal_price: formattedCheckoutData.subtotal_price,
+                            total_tax: formattedCheckoutData.total_tax
+                        })
+                        await checkoutRecord.save()
+                    }
+                }
 
-               // console.log("I've successfully updated all records in db")
+               console.log("I've successfully updated all records in db")
 
             } catch (error) {
                 console.error(`There was an error with pulling the draft orders \n ${error}`)
