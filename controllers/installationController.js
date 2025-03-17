@@ -10,7 +10,7 @@ module.exports = () => {
     const apiEndpoint = functionTrait.getShopifyAPIURLForStore
     const shopifyAPI = require("../traits/requests").makeAnAPICallToShopify
 
-    var accessScopes = 'read_products,read_customers,read_draft_orders,write_draft_orders, read_orders, write_orders';
+    var accessScopes = 'read_products,read_customers,read_draft_orders,write_draft_orders, read_orders, write_orders, read_payment_terms';
     
     var clientId = process.env.SHOPIFY_CLIENT_ID;
     var clientSecret = process.env.SHOPIFY_CLIENT_SECRET;

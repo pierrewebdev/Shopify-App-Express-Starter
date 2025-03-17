@@ -6,6 +6,7 @@ const User = require("../models/user.js")
 const ShopifyStores = require("../models/shopifystore.js")
 const UserStores = require("../models/userstore.js")
 const DraftOrder = require("../models/draftorder.js")
+const Order = require("../models/order.js")
 const Customer = require("../models/customer.js")
 
 async function findUserForStoreId(store) {
@@ -178,6 +179,29 @@ async function createCustomerRecord(customer, storeRecord) {
     })
 }
 
+async function findOrderById(id) {
+    return await Order.findOne({
+        where: {
+            shopify_api_id: id
+        }
+    })
+}
+
+async function createOrderRecord(order, customerRecord) {
+    console.log(`This is the Draft ID: ${order.id}`)
+    return Order.create({
+       shopify_api_id: order.id,
+       currency: order.currency,
+       order_name: order.name,
+       order_line_items: JSON.stringify(order.line_items),
+       total_price: order.total_price,
+       subtotal_price: order.subtotal_price,
+       total_tax: order.total_tax,
+       status: order.status,
+       customer_id: customerRecord.id
+    })
+}
+
 module.exports = {
     findUserForStoreId,
     findUserById,
@@ -197,5 +221,7 @@ module.exports = {
     getAllDraftOrders,
     findCustomerById,
     findCustomerByShopifyId,
-    createCustomerRecord
+    createCustomerRecord,
+    createOrderRecord,
+    findOrderById
 }

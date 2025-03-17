@@ -84,6 +84,7 @@ module.exports = () => {
                 for (const draftOrder of draftOrders){
                     //Add images to the line items array on the draft order
 
+                    let associatedCustomer = undefined
                     const orderData = R.path(["node"])(draftOrder)
                     const formattedDraftData = {}
 
@@ -119,7 +120,7 @@ module.exports = () => {
 
                     formattedDraftData.line_items = lineItems
 
-                    const associatedCustomer = formattedDraftData.customer
+                    associatedCustomer = formattedDraftData.customer
 
                     //Skip to next draft order if there is no customer on current draft
                     if(!associatedCustomer) continue
@@ -129,6 +130,8 @@ module.exports = () => {
                     if(!customerRecord){
                         customerRecord = await mysqlAPI.createCustomerRecord(associatedCustomer, shopifyStore)
                     }
+
+                    let draftRecord = mysqlAPI.findDraftOrderById(formattedDraftData.id)
 
                    if(!draftRecord){
                         console.log("I made it in here")

@@ -81,27 +81,73 @@ module.exports = () => {
 
                 const gqlReq = await shopifyAPI("POST",endpoint, headers, payload)
                 const orders = R.path(["respBody", "data", "orders", "edges"])(gqlReq)
+                console.log("Orders",orders)
 
                 for(const order of orders){
+                    let associatedCustomer = undefined
                     const orderData = R.path(["node"])(order)
+                    const formattedOrderData = {}
 
-                    console.log(`I'm on this order: ${orderData.name} and this is the id: ${orderData.id}`)
-
-                    formattedOrderData.id = orderData.id
                     formattedOrderData.name = orderData.name
+                    formattedOrderData.id = orderData.id
                     formattedOrderData.status = orderData.displayFinancialStatus
+                    formattedOrderData.payment_terms = orderData.payment_terms
                     formattedOrderData.currency = orderData.currencyCode
                     formattedOrderData.total_tax = R.path(["shopMoney", "amount"])(orderData.totalTaxSet)
                     formattedOrderData.total_price = R.path(["shopMoney", "amount"])(orderData.totalPriceSet)
                     formattedOrderData.subtotal_price = R.path(["shopMoney", "amount"])(orderData.subtotalPriceSet)
 
-                    formattedOrderData.customer = orderData.customer
+                    const lineItems = R.pipe(
+                        R.path(["edges"]),
+                        R.map(obj => obj.node),
+                        R.map((lineItem) => {
+                            const tmp = {
+                                name: lineItem.name,
+                                quantity: lineItem.quantity,
+                                shopifyId: lineItem.id,
+                                price: lineItem.discountedTotalSet.shopMoney.amount,
+                                imageUrl: lineItem.image.url
+                            }
+
+                            return tmp
+                        })
+
+                    )(orderData.lineItems)
+
+                    formattedOrderData.line_items = lineItems
+
+                    //Skip to next draft order if there is no customer on current draft
+                    associatedCustomer = orderData.customer
+                    if(!associatedCustomer) continue
+
+                    let customerRecord = await mysqlAPI.findCustomerByShopifyId(associatedCustomer.id)  
+
+                    if(!customerRecord){
+                        customerRecord = await mysqlAPI.createCustomerRecord(associatedCustomer, shopifyStore)
+                    }
+
+                   let orderRecord = await mysqlAPI.findOrderById(formattedOrderData.id)
+
+                   if(!orderRecord){
+                       await mysqlAPI.createOrderRecord(formattedOrderData, customerRecord)
+                   } else{
+                       orderRecord.set({
+                           currency: formattedOrderData.currency,
+                           order_name: formattedOrderData.name,
+                           order_line_items: JSON.stringify(formattedOrderData.line_items),
+                           total_price: formattedOrderData.total_price,
+                           subtotal_price: formattedOrderData.subtotal_price,
+                           total_tax: formattedOrderData.total_tax,
+                           status: formattedOrderData.status
+                       })
+                       await orderRecord.save()
+                   }
+
+
                 }
 
-                console.log("result of GQL Request", orders[0].node.subtotalPriceSet)
 
-
-                //console.log("I've successfully updated all records in db")
+                console.log("I've successfully updated all records in db")
 
             } catch (error) {
                 console.error(`There was an error with pulling the orders \n ${error}`)
