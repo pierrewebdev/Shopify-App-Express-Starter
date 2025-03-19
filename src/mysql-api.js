@@ -170,6 +170,15 @@ async function findCustomerByShopifyId(id){
     })
 }
 
+async function findCustomerByNameAndEmail(name, email){
+    return await Customer.findOne({
+        where: {
+            name,
+            email
+        }
+    })
+}
+
 async function createCustomerRecord(customer, storeRecord) {
     return Customer.create({
        first_name: customer.firstName,
@@ -239,5 +248,6 @@ module.exports = {
     createCustomerRecord,
     createOrderRecord,
     findOrderById,
-    createCheckoutRecord
+    createCheckoutRecord,
+    findCustomerByNameAndEmail
 }

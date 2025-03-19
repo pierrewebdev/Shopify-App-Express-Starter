@@ -81,7 +81,6 @@ module.exports = () => {
 
                 const gqlReq = await shopifyAPI("POST",endpoint, headers, payload)
                 const orders = R.path(["respBody", "data", "orders", "edges"])(gqlReq)
-                console.log("Orders",orders)
 
                 for(const order of orders){
                     let associatedCustomer = undefined

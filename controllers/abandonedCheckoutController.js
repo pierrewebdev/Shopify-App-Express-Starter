@@ -21,50 +21,55 @@ module.exports = () => {
             const endpoint = apiEndpoint(`graphql.json`, shopifyStore)
 
             try {
-                const abandonedCheckoutsQuery = `query GetAbandonedCheckouts {
+                const abandonedCheckoutsQuery = `
+                query GetAbandonedCheckouts {
                     abandonedCheckouts(first: 10, query: "not_recovered") {
                         edges {
-                        node {
-                            name
-                            abandonedCheckoutUrl
-                            id
-                            customer {
-                                firstName
-                                email
-                                    emailMarketingConsent {
-                                        marketingState
-                                    }
-                            }
-                            subtotalPriceSet {
-                            shopMoney {
-                                amount
-                            }
-                            }
-                            totalPriceSet {
-                            shopMoney {
-                                amount
-                            }
-                            }
-                            totalTaxSet {
-                            shopMoney {
-                                amount
-                            }
-                            }
-                            lineItems(first: 10) {
-                            edges {
-                                node {
-                                quantity
+                            node {
+                                name
+                                abandonedCheckoutUrl
                                 id
-                                image {
-                                    url
+                                customer {
+                                    firstName
+                                    email
                                 }
+                                subtotalPriceSet {
+                                    shopMoney {
+                                        amount
+                                    }
+                                }
+                                totalPriceSet {
+                                    shopMoney {
+                                        amount
+                                    }
+                                }
+                                totalTaxSet {
+                                    shopMoney {
+                                        amount
+                                    }
+                                }
+                                lineItems(first: 10) {
+                                    edges {
+                                        node {
+                                        name
+                                        quantity
+                                        id
+                                        discountedTotalSet {
+                                            shopMoney {
+                                            amount
+                                            }
+                                        }
+                                        image {
+                                            url
+                                        }
+                                        }
+                                    }
                                 }
                             }
-                            }
-                        }
                         }
                     }
-                }`
+                }
+                `
 
                 const payload = JSON.stringify({
                     query: abandonedCheckoutsQuery
@@ -73,6 +78,8 @@ module.exports = () => {
                 const gqlReq = await shopifyAPI("POST",endpoint, headers, payload)
                 const abandonedCheckouts = R.path(["respBody", "data", "abandonedCheckouts", "edges"])(gqlReq)
 
+                console.log(gqlReq.respBody.errors)
+
                 for (const checkout of abandonedCheckouts){
 
                     const checkoutData = R.path(["node"])(checkout)
@@ -80,17 +87,17 @@ module.exports = () => {
 
                     formattedCheckoutData.id = checkoutData.id
                     formattedCheckoutData.name = checkoutData.name
-                    formattedCheckoutData.checkout_url = checkoutData.invoiceUrl
-                    formattedCheckoutData.status = checkoutData.status
+                    formattedCheckoutData.checkout_url = checkoutData.abandonedCheckoutUrl
                     formattedCheckoutData.currency = checkoutData.currencyCode
-                    formattedCheckoutData.total_tax = R.path(["shopMoney", "amount"])(checkoutData.totalTaxSet)
-                    formattedCheckoutData.total_price = R.path(["shopMoney", "amount"])(checkoutData.totalPriceSet)
-                    formattedCheckoutData.subtotal_price = R.path(["shopMoney", "amount"])(checkoutData.subtotalPriceSet)
+                    formattedCheckoutData.total_tax = R.path(["totalTaxSet","shopMoney", "amount"])(checkoutData.totalTaxSet)
+                    formattedCheckoutData.total_price = R.path(["totalPriceSet","shopMoney", "amount"])(checkoutData.totalPriceSet)
+                    formattedCheckoutData.subtotal_price = R.path(["subtotalTaxSet","shopMoney", "amount"])(checkoutData.subtotalPriceSet)
 
                     const lineItems = R.pipe(
                         R.path(["edges"]),
                         R.map(obj => obj.node),
                         R.map((lineItem) => {
+                            console.log("LINE ITEM", line)
                             const tmp = {
                                 name: lineItem.name,
                                 quantity: lineItem.quantity,
@@ -106,29 +113,40 @@ module.exports = () => {
 
                     formattedCheckoutData.line_items = lineItems
 
-                    const checkoutRecord = await mysqlAPI.findDraftOrderById(formattedCheckoutData.id)
+                    associatedCustomer = checkoutData.customer
+                    if(!associatedCustomer) continue
 
+                    const {firstName, email} = associatedCustomer
+                    let customerRecord = await mysqlAPI.findCustomerByNameAndEmail(firstName, email)
 
-                    if(!checkoutRecord){
-                        await mysqlAPI.createDraftOrderRecord(formattedCheckoutData, shopifyStore)
-                    } else{
-                        checkoutRecord.set({
-                            shopify_api_id: formattedCheckoutData.id,
-                            checkout_name: formattedCheckoutData.name,
-                            checkout_line_items: JSON.stringify(formattedCheckoutData.line_items),
-                            checkout_url: formattedCheckoutData.checkout_url,
-                            total_price: formattedCheckoutData.total_price,
-                            subtotal_price: formattedCheckoutData.subtotal_price,
-                            total_tax: formattedCheckoutData.total_tax
-                        })
-                        await checkoutRecord.save()
+                    console.log("The Customer Record", customerRecord)
+                    return
+                    if(!customerRecord){
+                        customerRecord = await mysqlAPI.createCustomerRecord(associatedCustomer, shopifyStore)
                     }
+
+                   let orderRecord = await mysqlAPI.findOrderById(formattedOrderData.id)
+
+                   if(!orderRecord){
+                       await mysqlAPI.createOrderRecord(formattedOrderData, customerRecord)
+                   } else{
+                       orderRecord.set({
+                           currency: formattedOrderData.currency,
+                           order_name: formattedOrderData.name,
+                           order_line_items: JSON.stringify(formattedOrderData.line_items),
+                           total_price: formattedOrderData.total_price,
+                           subtotal_price: formattedOrderData.subtotal_price,
+                           total_tax: formattedOrderData.total_tax,
+                           status: formattedOrderData.status
+                       })
+                       await orderRecord.save()
+                   }
                 }
 
                console.log("I've successfully updated all records in db")
 
             } catch (error) {
-                console.error(`There was an error with pulling the draft orders \n ${error}`)
+                console.error(`There was an error with pulling the abandoned checkouts \n ${error}`)
             } finally {
                 res.sendStatus(200)
             }
