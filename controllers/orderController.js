@@ -119,11 +119,7 @@ module.exports = () => {
                     associatedCustomer = orderData.customer
                     if(!associatedCustomer) continue
 
-                    let customerRecord = await mysqlAPI.findCustomerByShopifyId(associatedCustomer.id)  
-
-                    if(!customerRecord){
-                        customerRecord = await mysqlAPI.createCustomerRecord(associatedCustomer, shopifyStore)
-                    }
+                    let customerRecord = await mysqlAPI.createOrUpdateCustomer(associatedCustomer, shopifyStore)
 
                    let orderRecord = await mysqlAPI.findOrderById(formattedOrderData.id)
 

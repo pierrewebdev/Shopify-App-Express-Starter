@@ -7,6 +7,7 @@ const ShopifyStores = require("../models/shopifystore.js")
 const UserStores = require("../models/userstore.js")
 const DraftOrder = require("../models/draftorder.js")
 const Order = require("../models/order.js")
+const AbandonedCheckout = require("../models/abandonedCheckout.js")
 const Customer = require("../models/customer.js")
 
 async function findUserForStoreId(store) {
@@ -162,6 +163,62 @@ async function findCustomerById(id){
     })
 }
 
+async function createOrUpdateCustomer(customerData, storeRecord) {
+    return Customer.sequelize.transaction(async (t) => {
+        // Try to find by shopify_id first if available
+        if (customerData.id) {
+            const byId = await Customer.findOne({
+                where: {
+                    shopify_api_id: customerData.id,
+                    store_id: storeRecord.id
+                },
+                transaction: t
+            });
+            if (byId) return byId;
+        }
+
+        // Try to find by email/store_id
+        const byEmail = await Customer.findOne({
+            where: {
+                email: customerData.email,
+                store_id: storeRecord.id
+            },
+            transaction: t
+        });
+
+        if (byEmail) {
+            // Update shopify_id if it's now available and doesn't exist
+            if (customerData.id && !byEmail.shopify_api_id) {
+                // Verify no existing record with this shopify_id
+                const existing = await Customer.findOne({
+                    where: {
+                        shopify_api_id: customerData.id,
+                        store_id: storeRecord.id
+                    },
+                    transaction: t
+                });
+
+                if (existing) {
+                    throw new Error('Customer with this Shopify ID already exists');
+                }
+
+                await byEmail.update({
+                    shopify_api_id: customerData.id
+                }, { transaction: t });
+            }
+            return byEmail;
+        }
+
+        // Create new record
+        return Customer.create({
+            first_name: customerData.firstName,
+            email: customerData.email,
+            shopify_api_id: customerData.id || null,
+            store_id: storeRecord.id
+        }, { transaction: t });
+    });
+}
+
 async function findCustomerByShopifyId(id){
     return await Customer.findOne({
         where: {
@@ -170,11 +227,12 @@ async function findCustomerByShopifyId(id){
     })
 }
 
-async function findCustomerByNameAndEmail(name, email){
+async function findCustomerByNameAndEmail(firstName, email, storeRecord){
     return await Customer.findOne({
         where: {
-            name,
-            email
+            first_name: firstName,
+            email: email,
+            store_id: storeRecord.id
         }
     })
 }
@@ -211,19 +269,48 @@ async function createOrderRecord(order, customerRecord) {
     })
 }
 
+async function updateOrCreateCheckoutRecord(checkoutData, customerRecord) {
+    return AbandonedCheckout.sequelize.transaction(async (t) => {
+        // Try to find existing checkout record
+        const checkoutRecord = await AbandonedCheckout.findOne({
+            where: {
+                shopify_api_id: checkoutData.id
+            },
+            transaction: t
+        });
+
+        if (checkoutRecord) {
+            // Update existing record
+            await checkoutRecord.update({
+                currency: checkoutData.currency,
+                checkout_name: checkoutData.name,
+                checkout_line_items: JSON.stringify(checkoutData.line_items),
+                checkout_url: checkoutData.checkout_url,
+                total_price: checkoutData.total_price,
+                subtotal_price: checkoutData.subtotal_price,
+                total_tax: checkoutData.total_tax,
+                customer_id: customerRecord.id
+            }, { transaction: t });
+            return checkoutRecord;
+        }
+
+        // Create new record
+        return AbandonedCheckout.create({
+            shopify_api_id: checkoutData.id,
+            currency: checkoutData.currency,
+            checkout_name: checkoutData.name,
+            checkout_line_items: JSON.stringify(checkoutData.line_items),
+            checkout_url: checkoutData.checkout_url,
+            total_price: checkoutData.total_price,
+            subtotal_price: checkoutData.subtotal_price,
+            total_tax: checkoutData.total_tax,
+            customer_id: customerRecord.id
+        }, { transaction: t });
+    });
+}
+
 async function createCheckoutRecord(checkout, customerRecord) {
-    console.log(`This is the Draft ID: ${checkout.id}`)
-    return checkout.create({
-       shopify_api_id: checkout.id,
-       currency: checkout.currency,
-       checkout_name: checkout.name,
-       checkout_line_items: JSON.stringify(checkout.line_items),
-       checkout_url: checkout.checkout_url,
-       total_price: checkout.total_price,
-       subtotal_price: checkout.subtotal_price,
-       total_tax: checkout.total_tax,
-       customer_id: customerRecord.id
-    })
+    return this.updateOrCreateCheckoutRecord(checkout, customerRecord);
 }
 
 module.exports = {
@@ -249,5 +336,7 @@ module.exports = {
     createOrderRecord,
     findOrderById,
     createCheckoutRecord,
-    findCustomerByNameAndEmail
+    findCustomerByNameAndEmail,
+    createOrUpdateCustomer,
+    updateOrCreateCheckoutRecord
 }

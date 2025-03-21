@@ -88,8 +88,6 @@ module.exports = () => {
                     const orderData = R.path(["node"])(draftOrder)
                     const formattedDraftData = {}
 
-                    console.log(`I'm on this order: ${orderData.name} and this is the id: ${orderData.id}`)
-
                     formattedDraftData.id = orderData.id
                     formattedDraftData.name = orderData.name
                     formattedDraftData.invoice_url = orderData.invoiceUrl
@@ -125,19 +123,14 @@ module.exports = () => {
                     //Skip to next draft order if there is no customer on current draft
                     if(!associatedCustomer) continue
 
-                    let customerRecord = await mysqlAPI.findCustomerByShopifyId(associatedCustomer.id)
+                    let customerRecord = await mysqlAPI.createOrUpdateCustomer(associatedCustomer, shopifyStore)
 
-                    if(!customerRecord){
-                        customerRecord = await mysqlAPI.createCustomerRecord(associatedCustomer, shopifyStore)
-                    }
-
-                    let draftRecord = mysqlAPI.findDraftOrderById(formattedDraftData.id)
+                    let draftRecord = await mysqlAPI.findDraftOrderById(formattedDraftData.id)
 
                    if(!draftRecord){
-                        console.log("I made it in here")
                        await mysqlAPI.createDraftOrderRecord(formattedDraftData, customerRecord)
                    } else{
-                       draftRecord.set({
+                       await draftRecord.set({
                            currency: formattedDraftData.currency,
                            order_name: formattedDraftData.name,
                            order_line_items: JSON.stringify(formattedDraftData.line_items),
@@ -163,33 +156,3 @@ module.exports = () => {
         }
     }
 }
-
-/*
-
- const mysqlAPI = require("./src/mysql-api");
- const helpers = require('./traits/functions');
- const shopifyAPI = require('./traits/requests').makeAnAPICallToShopify
-
- app.get(apiRoutePrefix + 'draft-orders', async (req, res) => {
-
-
- const userId = req.session.user.id
- const userRecord = await mysqlAPI.findUserById(userId)
- const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
-
- const domain = "appless-wishlist-demo-store.myshopify.com"
-
- const headers = helpers.getShopifyAPIHeadersForStore(shopifyStore);
- const endpoint = helpers.getShopifyAPIURLForStore(`draft_orders.json`, shopifyStore)
-
- console.log("HEADERS",headers, "\n\n", "ENDPOINT", endpoint)
- const response = await shopifyAPI("GET", endpoint, headers)
-
- res.json(response)
- })
-
-
-
-
-
-*/

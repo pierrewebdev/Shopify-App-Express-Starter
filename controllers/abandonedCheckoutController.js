@@ -36,6 +36,7 @@ module.exports = () => {
                                 subtotalPriceSet {
                                     shopMoney {
                                         amount
+                                        currencyCode
                                     }
                                 }
                                 totalPriceSet {
@@ -51,10 +52,10 @@ module.exports = () => {
                                 lineItems(first: 10) {
                                     edges {
                                         node {
-                                        name
+                                        title
                                         quantity
                                         id
-                                        discountedTotalSet {
+                                        discountedTotalPriceSet {
                                             shopMoney {
                                             amount
                                             }
@@ -78,31 +79,27 @@ module.exports = () => {
                 const gqlReq = await shopifyAPI("POST",endpoint, headers, payload)
                 const abandonedCheckouts = R.path(["respBody", "data", "abandonedCheckouts", "edges"])(gqlReq)
 
-                console.log(gqlReq.respBody.errors)
-
                 for (const checkout of abandonedCheckouts){
-
                     const checkoutData = R.path(["node"])(checkout)
                     const formattedCheckoutData = {}
 
                     formattedCheckoutData.id = checkoutData.id
                     formattedCheckoutData.name = checkoutData.name
                     formattedCheckoutData.checkout_url = checkoutData.abandonedCheckoutUrl
-                    formattedCheckoutData.currency = checkoutData.currencyCode
-                    formattedCheckoutData.total_tax = R.path(["totalTaxSet","shopMoney", "amount"])(checkoutData.totalTaxSet)
-                    formattedCheckoutData.total_price = R.path(["totalPriceSet","shopMoney", "amount"])(checkoutData.totalPriceSet)
-                    formattedCheckoutData.subtotal_price = R.path(["subtotalTaxSet","shopMoney", "amount"])(checkoutData.subtotalPriceSet)
+                    formattedCheckoutData.currency = R.path(["subtotalPriceSet","shopMoney", "currencyCode"])(checkoutData)
+                    formattedCheckoutData.total_tax = R.path(["totalTaxSet","shopMoney", "amount"])(checkoutData)
+                    formattedCheckoutData.total_price = R.path(["totalPriceSet","shopMoney", "amount"])(checkoutData)
+                    formattedCheckoutData.subtotal_price = R.path(["subtotalPriceSet","shopMoney", "amount"])(checkoutData)
 
                     const lineItems = R.pipe(
                         R.path(["edges"]),
                         R.map(obj => obj.node),
                         R.map((lineItem) => {
-                            console.log("LINE ITEM", line)
                             const tmp = {
-                                name: lineItem.name,
+                                name: lineItem.title,
                                 quantity: lineItem.quantity,
                                 shopifyId: helperMethods.extractIdFromGid(lineItem.id),
-                                price: lineItem.discountedTotalSet.shopMoney.amount,
+                                price: lineItem.discountedTotalPriceSet.shopMoney.amount,
                                 imageUrl: lineItem.image.url
                             }
 
@@ -116,31 +113,13 @@ module.exports = () => {
                     associatedCustomer = checkoutData.customer
                     if(!associatedCustomer) continue
 
-                    const {firstName, email} = associatedCustomer
-                    let customerRecord = await mysqlAPI.findCustomerByNameAndEmail(firstName, email)
+                    let customerRecord = await mysqlAPI.createOrUpdateCustomer({
+                        firstName: associatedCustomer.firstName,
+                        email: associatedCustomer.email,
+                        id: associatedCustomer.id
+                    }, shopifyStore)
 
-                    console.log("The Customer Record", customerRecord)
-                    return
-                    if(!customerRecord){
-                        customerRecord = await mysqlAPI.createCustomerRecord(associatedCustomer, shopifyStore)
-                    }
-
-                   let orderRecord = await mysqlAPI.findOrderById(formattedOrderData.id)
-
-                   if(!orderRecord){
-                       await mysqlAPI.createOrderRecord(formattedOrderData, customerRecord)
-                   } else{
-                       orderRecord.set({
-                           currency: formattedOrderData.currency,
-                           order_name: formattedOrderData.name,
-                           order_line_items: JSON.stringify(formattedOrderData.line_items),
-                           total_price: formattedOrderData.total_price,
-                           subtotal_price: formattedOrderData.subtotal_price,
-                           total_tax: formattedOrderData.total_tax,
-                           status: formattedOrderData.status
-                       })
-                       await orderRecord.save()
-                   }
+                   await mysqlAPI.updateOrCreateCheckoutRecord(formattedCheckoutData, customerRecord);
                 }
 
                console.log("I've successfully updated all records in db")
