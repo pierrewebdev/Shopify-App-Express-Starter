@@ -68,7 +68,7 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.get("/check-access-scopes", installationController.checkScopes)
 
     // Dashboard Routes
-    app.get('/dashboard', RequireAuth, dashboardController.index);
+    app.get('/', RequireAuth, dashboardController.index);
     app.get('/invoice/:draft_id', RequireAuth, dashboardController.invoice);
 
     app.get("/assets/uptown.css", (req,res) => {
@@ -77,6 +77,10 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
 
     app.get("/assets/invoice.css", (req,res) => {
         res.sendFile(`${__dirname}/pages/assets/invoice.css`)
+    })
+
+    app.get("/views/components/button.js", (req,res) => {
+        res.sendFile(`${__dirname}/pages/views/components/button.js`)
     })
 
     //Draft Order Routes
