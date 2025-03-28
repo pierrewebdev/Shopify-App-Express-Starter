@@ -155,6 +155,14 @@ async function getAllDraftOrders() {
     return await DraftOrder.findAll()
 }
 
+async function getAllOrders() {
+    return await Order.findAll()
+}
+
+async function getAllCheckouts() {
+    return await AbandonedCheckout.findAll()
+}
+
 async function findCustomerById(id){
     return await Customer.findOne({
         where: {
@@ -338,5 +346,7 @@ module.exports = {
     createCheckoutRecord,
     findCustomerByNameAndEmail,
     createOrUpdateCustomer,
-    updateOrCreateCheckoutRecord
+    updateOrCreateCheckoutRecord,
+    getAllCheckouts,
+    getAllOrders
 }

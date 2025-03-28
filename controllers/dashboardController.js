@@ -14,6 +14,7 @@ module.exports = () => {
         const userRecord = await mysqlAPI.findUserById(userId)
         const shopifyStore = await mysqlAPI.getShopifyStoreData(userRecord)
 
+        //Draft Orders
         const draftOrders = await mysqlAPI.getAllDraftOrders()
 
         const promiseArr = draftOrders.map(async draft => {
@@ -26,9 +27,37 @@ module.exports = () => {
 
         const draftOrdersWithCustomers = await Promise.all(promiseArr)
 
+        //Orders
+        const orders = await mysqlAPI.getAllOrders()
+
+        const orderPromiseArr = orders.map(async order => {
+          const customerRecord = await mysqlAPI.findCustomerById(order.customer_id)
+          const tmp = {...order.dataValues}
+
+          tmp.customer = customerRecord.dataValues
+          return tmp
+        })
+
+        const ordersWithCustomers = await Promise.all(orderPromiseArr)
+
+        //Checkouts
+        const checkouts = await mysqlAPI.getAllCheckouts()
+
+        const checkoutPromiseArr = checkouts.map(async checkout => {
+          const customerRecord = await mysqlAPI.findCustomerById(checkout.customer_id)
+          const tmp = {...checkout.dataValues}
+
+          tmp.customer = customerRecord.dataValues
+          return tmp
+        })
+
+        const checkoutWithCustomers = await Promise.all(checkoutPromiseArr)
+
         return res.render("index", {
             storeName: shopifyStore.name,
-            draftOrders: draftOrdersWithCustomers
+            draftOrders: draftOrdersWithCustomers,
+            orders: ordersWithCustomers,
+            checkouts: checkoutWithCustomers
         })
         
       } catch (error) {

@@ -1,8 +1,8 @@
-<section id = "drafts-content" class = "tab-content">
+<section id = "checkouts-content" class = "tab-content">
     <table class = "dashboard-table">
         <thead>
             <tr>
-                <th>Order Name</th>
+                <th>Checkout</th>
                 <th>Date</th>
                 <th>Customer</th>
                 <th>Amount</th>
@@ -13,14 +13,14 @@
         </thead>
         
         <tbody>
-            <% for (let draft of draftOrders) { %>
-                <tr data-href="#" onclick = "openInvoiceTemplate(`<%= draft.id %>`)">
-                    <td><%= draft.order_name %></td>
+            <% for (let checkout of checkouts) { %>
+                <tr data-href="#" onclick = "openInvoiceTemplate(`<%= checkout.id %>`)">
+                    <td><%= checkout.checkout_name %></td>
                     <td>DATE...</td>
-                    <td><%= draft.customer.first_name %></td>
-                    <td>$<%= draft.total_price %></td>
-                    <td><%= draft.status.toLowerCase() %></td>
-                    <td><%= draft.currency %></td>
+                    <td><%= checkout.customer.first_name %></td>
+                    <td>$<%= checkout.total_price %></td>
+                    <td>PENDING</td>
+                    <td>USD</td> <!--Change this later-->
                     <td>One</td>
                     
                 </tr>

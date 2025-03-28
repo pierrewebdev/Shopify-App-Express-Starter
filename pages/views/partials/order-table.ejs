@@ -1,8 +1,8 @@
-<section id = "drafts-content" class = "tab-content">
+<section id = "orders-content" class = "tab-content">
     <table class = "dashboard-table">
         <thead>
             <tr>
-                <th>Order Name</th>
+                <th>Order</th>
                 <th>Date</th>
                 <th>Customer</th>
                 <th>Amount</th>
@@ -13,14 +13,14 @@
         </thead>
         
         <tbody>
-            <% for (let draft of draftOrders) { %>
-                <tr data-href="#" onclick = "openInvoiceTemplate(`<%= draft.id %>`)">
-                    <td><%= draft.order_name %></td>
+            <% for (let order of orders) { %>
+                <tr data-href="#" onclick = "openInvoiceTemplate(`<%= order.id %>`)">
+                    <td><%= order.order_name %></td>
                     <td>DATE...</td>
-                    <td><%= draft.customer.first_name %></td>
-                    <td>$<%= draft.total_price %></td>
-                    <td><%= draft.status.toLowerCase() %></td>
-                    <td><%= draft.currency %></td>
+                    <td><%= order.customer.first_name %></td>
+                    <td>$<%= order.total_price %></td>
+                    <td>PENDING</td>
+                    <td><%= order.currency %></td>
                     <td>One</td>
                     
                 </tr>
@@ -28,9 +28,3 @@
         </tbody>
     </table>
 </section>
-
-<script>
-    const openInvoiceTemplate = function(draftOrderId){
-        window.location.href = `/invoice/${draftOrderId}`
-    }
-</script>
