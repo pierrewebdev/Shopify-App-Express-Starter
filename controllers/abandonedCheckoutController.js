@@ -29,6 +29,8 @@ module.exports = () => {
                                 name
                                 abandonedCheckoutUrl
                                 id
+                                completedAt
+                                createdAt
                                 customer {
                                     firstName
                                     email
@@ -85,6 +87,8 @@ module.exports = () => {
 
                     formattedCheckoutData.id = checkoutData.id
                     formattedCheckoutData.name = checkoutData.name
+                    formattedCheckoutData.checkout_completed = checkoutData.completedAt ? true : false
+                    formattedCheckoutData.shopify_created_date = checkoutData.createdAt
                     formattedCheckoutData.checkout_url = checkoutData.abandonedCheckoutUrl
                     formattedCheckoutData.currency = R.path(["subtotalPriceSet","shopMoney", "currencyCode"])(checkoutData)
                     formattedCheckoutData.total_tax = R.path(["totalTaxSet","shopMoney", "amount"])(checkoutData)

@@ -29,9 +29,15 @@ AbandonedCheckout.init({
         type: DataTypes.STRING,
         notEmpty: true
     },
+    shopify_created_date: {
+        type: DataTypes.DATE,
+    },
     checkout_name: {
         type: DataTypes.STRING,
         notEmpty: true
+    },
+    checkout_completed: {
+        type: DataTypes.BOOLEAN
     },
     checkout_line_items: {
         type: DataTypes.TEXT,

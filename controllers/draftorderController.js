@@ -27,6 +27,8 @@ module.exports = () => {
                             node{    
                                 name
                                 id
+                                completedAt
+                                createdAt
                                 invoiceUrl
                                 status
                                 currencyCode

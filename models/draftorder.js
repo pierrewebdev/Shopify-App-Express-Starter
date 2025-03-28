@@ -28,6 +28,9 @@ DraftOrder.init({
     currency: {
         type: DataTypes.STRING
     },
+    shopify_created_date: {
+        type: DataTypes.DATE,
+    },
     order_name: {
         type: DataTypes.STRING,
         notEmpty: true

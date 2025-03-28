@@ -35,6 +35,9 @@ Order.init({
     order_line_items: {
         type: DataTypes.TEXT
     },
+    shopify_created_date: {
+        type: DataTypes.DATE,
+    },
     total_price: {
         type: DataTypes.FLOAT
     },

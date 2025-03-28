@@ -27,6 +27,8 @@ module.exports = () => {
                         node{    
                             name
                             id
+                            completedAt
+                            createdAt
                             email
                             displayFinancialStatus
                             currencyCode
@@ -89,6 +91,7 @@ module.exports = () => {
 
                     formattedOrderData.name = orderData.name
                     formattedOrderData.id = orderData.id
+                    formattedOrderData.shopify_created_date = orderData.createdAt
                     formattedOrderData.status = orderData.displayFinancialStatus
                     formattedOrderData.payment_terms = orderData.payment_terms
                     formattedOrderData.currency = orderData.currencyCode

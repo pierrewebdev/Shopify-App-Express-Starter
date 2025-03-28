@@ -1,29 +1,37 @@
 <section id = "orders-content" class = "tab-content">
     <table class = "dashboard-table">
         <thead>
-            <tr>
-                <th>Order</th>
-                <th>Date</th>
-                <th>Customer</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Currency</th>
-                <th>Reminders</th>
-            </tr>
+            <% if (orders.length > 1) { %>
+                <tr>
+                    <th>Order</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Currency</th>
+                    <th>Reminders</th>
+                </tr>
+            <% }  %>
         </thead>
         
         <tbody>
-            <% for (let order of orders) { %>
-                <tr data-href="#" onclick = "openInvoiceTemplate(`<%= order.id %>`)">
-                    <td><%= order.order_name %></td>
-                    <td>DATE...</td>
-                    <td><%= order.customer.first_name %></td>
-                    <td>$<%= order.total_price %></td>
-                    <td>PENDING</td>
-                    <td><%= order.currency %></td>
-                    <td>One</td>
-                    
-                </tr>
+            <% if (orders.length < 1) { %>
+                <div class="columns" style = "margin-top: 2rem; margin-bottom: 2rem;">
+                    <p class = "column twelve">No Orders Found</p>
+                    <p class = "column twelve">We haven't found any unpaid Draft Orders but in the meantime you can set up your reminders</p>
+                </div>
+            <% } else { %>
+                <% for (let order of orders) { %>
+                    <tr data-href="#" onclick = "openInvoiceTemplate(`<%= order.id %>`)">
+                        <td><%= order.order_name %></td>
+                        <td>DATE...</td>
+                        <td><%= order.customer.first_name %></td>
+                        <td>$<%= order.total_price %></td>
+                        <td>PENDING</td>
+                        <td><%= order.currency %></td>
+                        <td>One</td>
+                    </tr>
+                <% } %>
             <% } %>
         </tbody>
     </table>
