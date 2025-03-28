@@ -79,8 +79,8 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
         res.sendFile(`${__dirname}/pages/assets/invoice.css`)
     })
 
-    app.get("/views/components/button.js", (req,res) => {
-        res.sendFile(`${__dirname}/pages/views/components/button.js`)
+    app.get("/views/components/tabs.js", (req,res) => {
+        res.sendFile(`${__dirname}/pages/views/components/tabs.js`)
     })
 
     //Draft Order Routes

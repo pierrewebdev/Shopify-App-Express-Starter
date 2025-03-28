@@ -56,7 +56,7 @@ module.exports = () => {
                     id: user.id
                 };
 
-                return res.redirect('/dashboard');         
+                return res.redirect('/');         
             } catch (error) {
                 console.log("There was an issue with the request to install the Shopify App")
                 res.json({
@@ -103,7 +103,7 @@ module.exports = () => {
                     id: userRecord.id
                 };
 
-                return res.redirect('/dashboard');
+                return res.redirect('/');
 
             } catch (error) {
                 return res.json({

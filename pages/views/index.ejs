@@ -2,7 +2,7 @@
 <%- include('partials/app-header') %>
 
 <!-- Tabs-->
-<section>
+<!-- <section>
     <div class="columns has-sections">
         <h2>Recovery Types</h2>
         <ul class="tabs">
@@ -11,7 +11,9 @@
             <li><a href="#checkouts">Abandoned Checkouts</a></li>
         </ul>
     </div>
-</section>
+</section> -->
+
+<section id = "tabs"></section>
 
 <!--Table of Draft Orders-->
 <%- include('partials/draft-order-table')  %>
@@ -39,9 +41,6 @@
     <button class = "test-endpoint-btn">
         Get Access Scopes
     </button>
-</div>
-
-<div class = "column twelve" style = "margin-bottom: 2rem;" id="react-btn">
 </div>
 
 
@@ -128,5 +127,7 @@
         }
     }
 </script>
+
+<script src = "components/tabs.js" type = "text/babel"></script>
 
 <!-- App Main Dashboard Ends Here-->

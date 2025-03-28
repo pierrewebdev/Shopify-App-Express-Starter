@@ -2628,7 +2628,7 @@ table.summary tr td:last-child {
   padding: 0 1.6rem;
 }
 
-.tabs li a {
+.tabs li {
   display: inline-block;
   font-size: 1.4rem;
   line-height: 3.6rem;
@@ -2641,15 +2641,15 @@ table.summary tr td:last-child {
   border-bottom: .3rem solid transparent;
 }
 
-.tabs li a:hover {
+.tabs li:hover {
   outline: none;
   color: #212b36;
   border-color: #dfe3e8;
   text-decoration: none;
 }
 
-.tabs li.active a,
-.tabs li:first-child:last-child a {
+.tabs li.active,
+.tabs li:first-child:last-child {
   color: #212b36;
   cursor: default;
   text-decoration: none;
