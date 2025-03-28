@@ -79,6 +79,10 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
         res.sendFile(`${__dirname}/pages/assets/invoice.css`)
     })
 
+    app.get("/assets/dashboard.css", (req,res) => {
+        res.sendFile(`${__dirname}/pages/assets/dashboard.css`)
+    })
+
     app.get("/views/components/tabs.js", (req,res) => {
         res.sendFile(`${__dirname}/pages/views/components/tabs.js`)
     })

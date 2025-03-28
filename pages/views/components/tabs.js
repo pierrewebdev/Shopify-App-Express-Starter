@@ -2,17 +2,22 @@ function Tabs() {
     const [activeTab, setActiveTab] = React.useState('drafts');
   
     React.useEffect(() => {
-    console.log("Current Active Tab", activeTab)
     
       // Hide all tab content
       document.querySelectorAll('.tab-pane').forEach(el => {
         el.classList.remove('active');
       });
 
+      document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.remove('show');
+      });
+
       // Show active tab content -- I probably don't need this if I set up the CSS properly
+      const currentTab = document.getElementById(activeTab)
       const currentTabContent = document.getElementById(`${activeTab}-content`)
       if(!currentTabContent) return
 
+      currentTab.classList.toggle("active")
       currentTabContent.classList.toggle('show');
     }, [activeTab]);
   
