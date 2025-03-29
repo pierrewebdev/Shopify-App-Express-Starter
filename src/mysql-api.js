@@ -136,10 +136,10 @@ async function findDraftOrderById(id) {
 }
 
 async function createDraftOrderRecord(draftOrder, customerRecord) {
-    console.log(`This is the Draft ID: ${draftOrder.id}`)
     return DraftOrder.create({
        shopify_api_id: draftOrder.id,
        currency: draftOrder.currency,
+       shopify_created_date: draftOrder.shopify_created_date,
        order_name: draftOrder.name,
        order_line_items: JSON.stringify(draftOrder.line_items),
        invoice_url: draftOrder.invoice_url,
@@ -263,12 +263,13 @@ async function findOrderById(id) {
 }
 
 async function createOrderRecord(order, customerRecord) {
-    console.log(`This is the Draft ID: ${order.id}`)
+    
     return Order.create({
        shopify_api_id: order.id,
        currency: order.currency,
        order_name: order.name,
        order_line_items: JSON.stringify(order.line_items),
+       shopify_created_date: order.shopify_created_date,
        total_price: order.total_price,
        subtotal_price: order.subtotal_price,
        total_tax: order.total_tax,
@@ -294,6 +295,7 @@ async function updateOrCreateCheckoutRecord(checkoutData, customerRecord) {
                 checkout_name: checkoutData.name,
                 checkout_line_items: JSON.stringify(checkoutData.line_items),
                 checkout_url: checkoutData.checkout_url,
+                shopify_created_date: checkoutData.shopify_created_date,
                 total_price: checkoutData.total_price,
                 subtotal_price: checkoutData.subtotal_price,
                 total_tax: checkoutData.total_tax,
@@ -309,6 +311,7 @@ async function updateOrCreateCheckoutRecord(checkoutData, customerRecord) {
             checkout_name: checkoutData.name,
             checkout_line_items: JSON.stringify(checkoutData.line_items),
             checkout_url: checkoutData.checkout_url,
+            shopify_created_date: checkoutData.shopify_created_date,
             total_price: checkoutData.total_price,
             subtotal_price: checkoutData.subtotal_price,
             total_tax: checkoutData.total_tax,

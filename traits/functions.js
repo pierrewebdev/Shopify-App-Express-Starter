@@ -195,6 +195,18 @@ module.exports = {
         return parts[parts.length - 1];
     },
 
+    formatDate: function(dateString) {
+        const date = new Date(dateString);
+        const options = { 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        };
+        return date.toLocaleString('en-US', options);
+    },
+
     sendInvoiceEmail: async function (emailData) {
         const { 
             customerEmail,
@@ -967,4 +979,3 @@ module.exports = {
 
     }
 }
-

@@ -26,7 +26,7 @@
                 <% for (let draft of draftOrders) { %>
                     <tr data-href="#" onclick = "openInvoiceTemplate(`<%= draft.id %>`)">
                         <td><%= draft.order_name %></td>
-                        <td>DATE...</td>
+                        <td><%= formatDate(draft.shopify_created_date) %></td>
                         <td><%= draft.customer.first_name %></td>
                         <td>$<%= draft.total_price %></td>
                         <td><%= draft.status.toLowerCase() %></td>

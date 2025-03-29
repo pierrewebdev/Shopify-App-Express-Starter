@@ -24,7 +24,7 @@
                 <% for (let checkout of checkouts) { %>
                     <tr data-href="#" onclick = "openInvoiceTemplate(`<%= checkout.id %>`)">
                         <td><%= checkout.checkout_name %></td>
-                        <td>DATE...</td>
+                        <td><%= formatDate(checkout.shopify_created_date) %></td>
                         <td><%= checkout.customer.first_name %></td>
                         <td>$<%= checkout.total_price %></td>
                         <td>PENDING</td>

@@ -27,7 +27,6 @@ module.exports = () => {
                         node{    
                             name
                             id
-                            completedAt
                             createdAt
                             email
                             displayFinancialStatus
@@ -131,6 +130,7 @@ module.exports = () => {
                    } else{
                        orderRecord.set({
                            currency: formattedOrderData.currency,
+                           shopify_created_date: formattedOrderData.shopify_created_date,
                            order_name: formattedOrderData.name,
                            order_line_items: JSON.stringify(formattedOrderData.line_items),
                            total_price: formattedOrderData.total_price,

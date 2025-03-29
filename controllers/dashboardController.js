@@ -53,11 +53,13 @@ module.exports = () => {
 
         const checkoutWithCustomers = await Promise.all(checkoutPromiseArr)
 
+        const { formatDate } = require("../traits/functions");
         return res.render("index", {
             storeName: shopifyStore.name,
             draftOrders: draftOrdersWithCustomers,
             orders: ordersWithCustomers,
-            checkouts: checkoutWithCustomers
+            checkouts: checkoutWithCustomers,
+            formatDate
         })
         
       } catch (error) {

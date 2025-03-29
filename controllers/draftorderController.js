@@ -27,7 +27,6 @@ module.exports = () => {
                             node{    
                                 name
                                 id
-                                completedAt
                                 createdAt
                                 invoiceUrl
                                 status
@@ -92,6 +91,7 @@ module.exports = () => {
 
                     formattedDraftData.id = orderData.id
                     formattedDraftData.name = orderData.name
+                    formattedDraftData.shopify_created_date = orderData.createdAt
                     formattedDraftData.invoice_url = orderData.invoiceUrl
                     formattedDraftData.status = orderData.status
                     formattedDraftData.currency = orderData.currencyCode
@@ -135,6 +135,7 @@ module.exports = () => {
                        await draftRecord.set({
                            currency: formattedDraftData.currency,
                            order_name: formattedDraftData.name,
+                           shopify_created_date: formattedDraftData.shopify_created_date,
                            order_line_items: JSON.stringify(formattedDraftData.line_items),
                            invoice_url: formattedDraftData.invoice_url,
                            total_price: formattedDraftData.total_price,

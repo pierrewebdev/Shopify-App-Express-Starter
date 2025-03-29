@@ -24,7 +24,7 @@
                 <% for (let order of orders) { %>
                     <tr data-href="#" onclick = "openInvoiceTemplate(`<%= order.id %>`)">
                         <td><%= order.order_name %></td>
-                        <td>DATE...</td>
+                        <td><%= formatDate(order.shopify_created_date) %></td>
                         <td><%= order.customer.first_name %></td>
                         <td>$<%= order.total_price %></td>
                         <td>PENDING</td>
