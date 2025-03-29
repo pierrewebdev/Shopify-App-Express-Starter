@@ -29,7 +29,7 @@
                         <td><%= formatDate(draft.shopify_created_date) %></td>
                         <td><%= draft.customer.first_name %></td>
                         <td>$<%= draft.total_price %></td>
-                        <td><%= draft.status.toLowerCase() %></td>
+                        <td><%= draft.status.toLowerCase() === "completed" ? "PAID" : "UNPAID" %></td>
                         <td><%= draft.currency %></td>
                         <td>One</td>
                         

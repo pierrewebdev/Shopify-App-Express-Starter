@@ -27,7 +27,7 @@
                         <td><%= formatDate(order.shopify_created_date) %></td>
                         <td><%= order.customer.first_name %></td>
                         <td>$<%= order.total_price %></td>
-                        <td>PENDING</td>
+                        <td><%= order.financial_status && order.financial_status == "PAID" ? "PAID" : "UNPAID" %></td>
                         <td><%= order.currency %></td>
                         <td>One</td>
                     </tr>

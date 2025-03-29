@@ -136,7 +136,7 @@ module.exports = () => {
                            total_price: formattedOrderData.total_price,
                            subtotal_price: formattedOrderData.subtotal_price,
                            total_tax: formattedOrderData.total_tax,
-                           status: formattedOrderData.status
+                           financial_status: formattedOrderData.status
                        })
                        await orderRecord.save()
                    }
