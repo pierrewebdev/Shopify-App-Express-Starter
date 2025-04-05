@@ -34,12 +34,20 @@ UserStore.init({
     },
     // store_id: {
     //     type: DataTypes.INTEGER,
-    //     notEmpty: true
+    //     allowNull: false,
+    //     references: {
+    //         model: 'ShopifyStores',
+    //         key: 'id'
+    //     }
     // },
     // user_id: {
     //     type: DataTypes.INTEGER,
-    //     notEmpty: true
-    // },
+    //     allowNull: false,
+    //     references: {
+    //         model: 'Users',
+    //         key: 'id'
+    //     }
+    //},
     createdAt: {
         field: 'created_at',
         type: DataTypes.DATE,
@@ -56,6 +64,6 @@ UserStore.init({
 },
 )
 
-UserStore.sync()
+// UserStore.sync()
 
 module.exports = UserStore

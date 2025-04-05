@@ -1,7 +1,5 @@
 //Initialize Models and Set up Relationships
-const User = require("./user.js")
 const ShopifyStore = require("./shopifystore.js")
-const UserStore = require("./userstore.js")
 const DraftOrder = require("./draftorder.js")
 const Order = require("./order.js")
 const AbandonedCheckout = require("./abandonedCheckout.js")
@@ -11,20 +9,7 @@ const Customer = require("./customer.js")
 
 async function setupModels(){
 
-    // User Relationships
-    User.belongsToMany(ShopifyStore, {
-        through: UserStore,
-        foreignKey: 'user_id',
-        otherKey: 'store_id'
-    })
-
     // ShopifyStore Relationships
-    ShopifyStore.belongsToMany(User, {
-        through: UserStore,
-        foreignKey: 'store_id',
-        otherKey: 'user_id'
-    })
-
     ShopifyStore.hasMany(Customer, {
         foreignKey: "store_id"
     })
@@ -58,13 +43,17 @@ async function setupModels(){
         foreignKey: "customer_id"
     })
 
-    User.sync()
-    ShopifyStore.sync()
-    UserStore.sync()
-    Customer.sync()
-    DraftOrder.sync()
-    Order.sync()
-    AbandonedCheckout.sync()
+    // Sync in dependency order with proper error handling
+    try {
+        await ShopifyStore.sync()
+        await Customer.sync()
+        await DraftOrder.sync()
+        await Order.sync()
+        await AbandonedCheckout.sync()
+    } catch (error) {
+        console.error('Database sync failed:', error)
+        throw error
+    }
 }
 
 module.exports = setupModels

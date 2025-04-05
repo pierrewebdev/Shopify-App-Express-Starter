@@ -35,16 +35,6 @@ User.init({
             isEmail: true
         }
     },
-    password: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    email_verified_at: {
-        type: DataTypes.DATE
-    },
-    // authtoken: {
-    //     type: DataTypes.STRING
-    // },
     createdAt: {
         field: 'created_at',
         type: DataTypes.DATE,
@@ -61,7 +51,7 @@ User.init({
 },
 )
 
-User.sync()
+//User.sync()
 
 module.exports = User
 

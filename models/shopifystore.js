@@ -49,39 +49,24 @@ ShopifyStore.init({
         type: DataTypes.INTEGER
     },
     shopify_id: {
-        type: DataTypes.BIGINT(20)
+        type: DataTypes.STRING
     },
     myshopify_domain: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
     },
-    access_token: {
-        type: DataTypes.STRING
+    shopify_session: {
+        type: DataTypes.TEXT
     },
     name: {
         type: DataTypes.STRING
     },
-    plan_name: {
-        type: DataTypes.STRING            
-    },
     currency: {
-        type: DataTypes.STRING            
-    },
-    shop_owner: {
         type: DataTypes.STRING            
     },
     email: {
         type: DataTypes.STRING
-    },
-    customer_email: {
-        type: DataTypes.STRING
-    },
-    phone: {
-        type: DataTypes.STRING
-    },
-    eligible_for_card_reader_giveaway: {
-        type: DataTypes.INTEGER
     },
     createdAt: {
         field: 'created_at',

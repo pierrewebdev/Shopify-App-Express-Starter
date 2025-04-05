@@ -70,7 +70,6 @@ async function createUserRecord(userData){
     return User.create({
         name: userData.name,
         email: userData.email,
-        password: userData.password
     })
 }
 
@@ -90,10 +89,9 @@ async function createStoreRecord (storeBody) {
         name: storeBody.name,
         shopify_id: storeBody.id,
         myshopify_domain: storeBody.myshopify_domain,
-        access_token: storeBody.accessToken,
+        shopify_session: storeBody.session,
         currency: storeBody.currency,
-        email: storeBody.email,
-        phone: storeBody.phone
+        email: storeBody.email
     })
 }
 

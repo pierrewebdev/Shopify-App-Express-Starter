@@ -3,7 +3,7 @@ const moment = require('moment');
 const cookieParser = require("cookie-parser");
 const app = express()
 var cors = require('cors');
-const port = 80;
+const port = 8080;
 const bodyParser = require('body-parser'); // middleware
 
 // set ejs view cache

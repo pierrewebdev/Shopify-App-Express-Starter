@@ -1,37 +1,69 @@
-const jwt = require('jsonwebtoken');
+const mysqlAPI = require("../src/mysql-api");
+const R = require("ramda");
 
-const { Sequelize, DataTypes } = require("sequelize");
-var env = process.env.NODE_ENV || "development";
-var config = require('../config.json')[env];
-var sequelize = new Sequelize(config.database, config.username, config.password, config);
+module.exports = (shopify) => {
+    return {
+        saveShopInfo: async function(req, res, next) {
+            try {
+                // Verify session exists
+                if (!res.locals.shopify?.session) {
+                    throw new Error('Shopify session not found');
+                }
 
-const Users = require('../models/users')(sequelize, DataTypes);
+                const { session } = res.locals.shopify;
 
-module.exports = {
-    /**
-     * 
-     * @param {object} req - Authenticated user 
-     * @param {object} res - Response
-     * @returns {json} 
-     */
-    login: async function (req, res) {
-        var user = req.user; 
-        
-        //This is needed because it will keep increasing the token length if you comment it
-        delete(user.authtoken);
-        
-        const token = jwt.sign(user, process.env.APP_KEY);
-        var returnResponse = {
-            "user": {
-                "id": user.id,
-                "email": user.email,
-                "name": user.name,
-                "created_at": user.createdAt,
-                "updated_at": user.updatedAt
-            },
-            "authToken": token
-        };
-        
-        return res.json(returnResponse).status(200);
-    }
-}
+                // Validate required session properties
+                if (!session?.accessToken || !session?.shop) {
+                    throw new Error('Session missing required properties');
+                }
+
+                // Create client with proper structure
+                const client = new shopify.api.clients.Graphql({ session });
+
+                // Make API call
+                const response = await client.query({
+                    data: `{
+                        shop {
+                            id
+                            name
+                            currencyCode
+                            email
+                        }
+                    }`
+                });
+
+                const shopObj = response.body.data.shop;
+                const storeData = {
+                    id: shopObj.id,
+                    name: shopObj.name,
+                    currency: shopObj.currencyCode,
+                    email: shopObj.email,
+                    myshopify_domain: session.shop,
+                    session: JSON.stringify({...session})
+                };
+
+                // Save store record
+                await this.saveDetailsToDatabase(storeData);
+                next();
+            } catch (error) {
+                console.error('Auth callback error:', error);
+                return res.status(500).send('Authentication failed');
+            }
+        },
+
+        saveDetailsToDatabase: async function(storeData) {
+            try {
+                // 1. Create/Update Shopify Store
+                let storeRecord = await mysqlAPI.getStoreByDomain(storeData.myshopify_domain);
+                if (!storeRecord) {
+                    storeRecord = await mysqlAPI.createStoreRecord(storeData);
+                }
+                return storeRecord;
+            } catch (error) {
+                console.error('Failed to save installation details:', error);
+                throw error;
+            }
+        },
+
+    };
+};

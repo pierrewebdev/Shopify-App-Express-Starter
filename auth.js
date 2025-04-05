@@ -1,52 +1,55 @@
+// Comprehensive Web Crypto API polyfill
+const crypto = require('crypto');
+const { webcrypto } = crypto;
 
-const jwt = require('jsonwebtoken');
-const { tryCatch } = require('ramda');
+global.crypto = {
+  ...webcrypto,
+  getRandomValues: (array) => {
+    if (!ArrayBuffer.isView(array)) {
+      throw new TypeError('Argument must be an ArrayBufferView');
+    }
+    if (array.byteLength > 65536) {
+      throw new Error('Quota exceeded');
+    }
+    const buffer = Buffer.from(array.buffer, array.byteOffset, array.byteLength);
+    crypto.randomFillSync(buffer);
+    return array;
+  },
+  subtle: webcrypto.subtle,
+  randomUUID: webcrypto.randomUUID
+};
+
 
 module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
 
+    
+    //Set up Shopify API package
+    const { shopifyApp } = require('@shopify/shopify-app-express');
+    const shopify = shopifyApp({
+        api: {
+            apiKey: process.env.SHOPIFY_CLIENT_ID,
+            apiSecretKey: process.env.SHOPIFY_CLIENT_SECRET,
+            scopes: ["read_products", "read_customers", "read_draft_orders", "write_draft_orders", "read_orders", "write_orders", "read_payment_terms"],
+            hostName: process.env.APP_URL
+        },
+        auth: {
+            path: '/shopify/auth',
+            callbackPath: '/shopify/auth/redirect'
+        },
+        webhooks: {
+            path: '/api/webhooks'
+        },
+    });
+
+
     // var dashboardController = require('./controllers/dashboardController')(/*mysqlAPI,*/ traits);
     // var storeController = require('./controllers/storeController')(/*mysqlAPI,*/ traits);
-    const installationController = require('./controllers/installationController')(/*mysqlAPI,*/);
+    const authController = require('./controllers/authController')(shopify);
     const dashboardController = require('./controllers/dashboardController')();
     const draftorderController = require('./controllers/draftorderController')();
     const webhooksController = require('./controllers/webhooksController')();
     const orderController = require('./controllers/orderController')();
     const abandonedCheckoutController = require('./controllers/abandonedCheckoutController')();
-
-    /** Do whatever with this middleware */
-    //apiAuth is not currently being used
-    function apiAuth(req, res, next) {
-        if (req.headers['authorization']) {
-            try {
-                let authorization = req.headers['authorization'].split(' ');
-                if (authorization[0] == 'Bearer') {
-                    req.user = jwt.verify(authorization[1], process.env.APP_KEY);
-                    return next();
-                } 
-            } catch (err) {
-                return res.status(401).json({
-                    "status": false, 
-                    "message": "Invalid/Expired token",
-                    "debug": err.message
-                });
-            }
-        } 
-        return res.status(401).json({
-            "status": false, 
-            "message":"Invalid request header or token"
-        });
-    }
-
-    function RequireAuth(req, res, next) {
-        if(!req.session.user) {
-            return res.status(401).json({
-                "status": false, 
-                "message":"Unauthorized"
-            });
-        }
-        
-        return next();
-    }
 
     // ====================== Main App Routes ====================== //
 
@@ -61,15 +64,28 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.delete("/delete-webhook/:id", webhooksController.deleteWebhook)
 
     //App Installation Routes
-    app.get('/shopify/auth', installationController.index);
-    app.get('/shopify/auth/redirect', installationController.redirect);
+    // app.get('/shopify/auth', installationController.index);
+    // app.get('/shopify/auth/redirect', installationController.redirect);
 
-    //Check app access scopes for development purposes
-    app.get("/check-access-scopes", installationController.checkScopes)
+    app.get(shopify.config.auth.path, shopify.auth.begin());
+    app.get(
+    shopify.config.auth.callbackPath,
+    shopify.auth.callback(),
+    authController.saveShopInfo,
+    shopify.redirectToShopifyOrAppRoot()
+    );
+
+    app.get('/', shopify.ensureInstalledOnShop(), (req, res) => {
+        res.send('Hello world!');
+    });
+
+    app.get('/exitiframe',shopify.ensureInstalledOnShop(), (req,res) => {
+        res.redirect("/")
+    })
 
     // Dashboard Routes
-    app.get('/', RequireAuth, dashboardController.index);
-    app.get('/invoice/:draft_id', RequireAuth, dashboardController.invoice);
+    app.get('/', shopify.ensureInstalledOnShop(), dashboardController.index);
+    app.get('/invoice/:draft_id', shopify.ensureInstalledOnShop(), dashboardController.invoice);
 
     app.get("/assets/uptown.css", (req,res) => {
         res.sendFile(`${__dirname}/pages/assets/uptown.css`)
@@ -91,13 +107,4 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.post("/sync-draft-orders", draftorderController.updateAllDraftOrders)
 
     //Send Invoice Email
-    const functionTrait = require('./traits/functions');
-    app.post("/send-invoice-email", dashboardController.sendInvoiceEmail)
-
-    //Order Routes
-    app.post("/test-order-req", orderController.updateAllOrders)
-
-    //Abandoned Checkout Routes
-    app.post("/test-checkout-req", abandonedCheckoutController.updateAllabandonedCheckouts)
-
 }
