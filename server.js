@@ -1,6 +1,6 @@
+const path = require('path')
+
 const express = require('express')
-const moment = require('moment');
-const cookieParser = require("cookie-parser");
 const app = express()
 var cors = require('cors');
 const port = 8080;
@@ -33,9 +33,26 @@ const sessionOptions = {
     port: dbConfig.port,
     user: dbConfig.username,
     password: dbConfig.password,
-    database: dbConfig.database
+    database: dbConfig.database,
+    clearExpired: true,
+    checkExpirationInterval: 900000, // 15 mins
+    createDatabaseTable: true,
+    schema: {
+        tableName: 'sessions',
+        columnNames: {
+            session_id: 'session_id',
+            expires: 'expires',
+            data: 'data'
+        }
+    }
 };
+
 const sessionStore = new MySQLStore(sessionOptions);
+
+// Handle session store errors
+sessionStore.on('error', (error) => {
+    console.error('Session store error:', error);
+});
 
 app.use( express.urlencoded({ extended: true }) );
 app.use(express.json({
@@ -48,8 +65,18 @@ app.use(express.json({
 // Sets up a persistent session for user in Sessions DB Table 
 app.use(session({
   secret: 'someverylargestringthatwecannotsimplyguess',
-  store: sessionStore
-})); 
+  store: sessionStore,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: true,
+    sameSite: 'none',
+    maxAge: 86400000 // 24 hours
+  }
+}));
+
+//Middleware that allows me to serve my compiled react app
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 //Set up Models
@@ -57,16 +84,10 @@ const setupModels = require("./models/set-up")
 setupModels()
 
 //Load Traits 
-const FunctionTrait = require('./traits/functions');
-const RequestTrait = require('./traits/requests');
-const traits = {FunctionTrait, RequestTrait}
-
-//load passport strategies 
-//require('./passport/passport.js')(passport, models.user);
-//require('./auth.js')(app, /*passport,*/ mysqlAPI, traits, env);
+const helpers = require('./helpers/functions');
 
 require('./auth.js')(app)
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`Server running on port ${port}`)
 })

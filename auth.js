@@ -29,7 +29,7 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
         api: {
             apiKey: process.env.SHOPIFY_CLIENT_ID,
             apiSecretKey: process.env.SHOPIFY_CLIENT_SECRET,
-            scopes: ["read_products", "read_customers", "read_draft_orders", "write_draft_orders", "read_orders", "write_orders", "read_payment_terms"],
+            scopes: process.env.SHOPIFY_API_SCOPES.split(','),
             hostName: process.env.APP_URL
         },
         auth: {
@@ -41,16 +41,19 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
         },
     });
 
+    // Add this before your routes to log all incoming requests
+    // app.use((req, res, next) => {
+    //   console.log(`[${req.method}] ${req.path} - Shop:`, req.query.shop);
+    //   next();
+    // });
+
+
 
     // var dashboardController = require('./controllers/dashboardController')(/*mysqlAPI,*/ traits);
     // var storeController = require('./controllers/storeController')(/*mysqlAPI,*/ traits);
     const authController = require('./controllers/authController')(shopify);
     const dashboardController = require('./controllers/dashboardController')();
-    const draftorderController = require('./controllers/draftorderController')();
     const webhooksController = require('./controllers/webhooksController')();
-    const orderController = require('./controllers/orderController')();
-    const abandonedCheckoutController = require('./controllers/abandonedCheckoutController')();
-
     // ====================== Main App Routes ====================== //
 
     //GDPR webhooks
@@ -64,47 +67,25 @@ module.exports = function(app, /*passport, mysqlAPI,*/ traits, env) {
     app.delete("/delete-webhook/:id", webhooksController.deleteWebhook)
 
     //App Installation Routes
-    // app.get('/shopify/auth', installationController.index);
-    // app.get('/shopify/auth/redirect', installationController.redirect);
-
     app.get(shopify.config.auth.path, shopify.auth.begin());
     app.get(
     shopify.config.auth.callbackPath,
     shopify.auth.callback(),
-    authController.saveShopInfo,
+    authController.saveShopInfo.bind(authController),
     shopify.redirectToShopifyOrAppRoot()
     );
 
     app.get('/', shopify.ensureInstalledOnShop(), (req, res) => {
-        res.send('Hello world!');
+        try {
+          res.sendFile(path.join(__dirname, 'public', 'index.html'));
+        } catch (error) {
+            console.error('Error in root route:', error);
+            res.status(500).send('Internal Server Error');
+          
+        }
     });
 
     app.get('/exitiframe',shopify.ensureInstalledOnShop(), (req,res) => {
-        res.redirect("/")
+        res.redirect(req.query.redirectUri);
     })
-
-    // Dashboard Routes
-    app.get('/', shopify.ensureInstalledOnShop(), dashboardController.index);
-    app.get('/invoice/:draft_id', shopify.ensureInstalledOnShop(), dashboardController.invoice);
-
-    app.get("/assets/uptown.css", (req,res) => {
-        res.sendFile(`${__dirname}/pages/assets/uptown.css`)
-    })
-
-    app.get("/assets/invoice.css", (req,res) => {
-        res.sendFile(`${__dirname}/pages/assets/invoice.css`)
-    })
-
-    app.get("/assets/dashboard.css", (req,res) => {
-        res.sendFile(`${__dirname}/pages/assets/dashboard.css`)
-    })
-
-    app.get("/views/components/tabs.js", (req,res) => {
-        res.sendFile(`${__dirname}/pages/views/components/tabs.js`)
-    })
-
-    //Draft Order Routes
-    app.post("/sync-draft-orders", draftorderController.updateAllDraftOrders)
-
-    //Send Invoice Email
 }

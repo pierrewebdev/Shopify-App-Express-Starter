@@ -21,25 +21,26 @@ module.exports = (shopify) => {
                 const client = new shopify.api.clients.Graphql({ session });
 
                 // Make API call
-                const response = await client.query({
-                    data: `{
-                        shop {
-                            id
-                            name
-                            currencyCode
-                            email
-                        }
-                    }`
-                });
+                // const response = await client.query({
+                //     data: `{
+                //         shop {
+                //             id
+                //             name
+                //             currencyCode
+                //             email
+                //         }
+                //     }`
+                // });
 
-                const shopObj = response.body.data.shop;
+                // const shopObj = response.body.data.shop;
+
+                const { state, isOnline, scope, accessToken, shop} = session
                 const storeData = {
-                    id: shopObj.id,
-                    name: shopObj.name,
-                    currency: shopObj.currencyCode,
-                    email: shopObj.email,
-                    myshopify_domain: session.shop,
-                    session: JSON.stringify({...session})
+                    myshopify_domain: shop,
+                    state: state,
+                    isOnline: isOnline,
+                    scope: scope,
+                    accessToken: accessToken,
                 };
 
                 // Save store record
@@ -52,6 +53,7 @@ module.exports = (shopify) => {
         },
 
         saveDetailsToDatabase: async function(storeData) {
+            console.log("Saving store data to database:", storeData);
             try {
                 // 1. Create/Update Shopify Store
                 let storeRecord = await mysqlAPI.getStoreByDomain(storeData.myshopify_domain);

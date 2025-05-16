@@ -10,43 +10,43 @@ const password = config.password
 const sequelize = new Sequelize(database, username, password, config)
 
 
-class Customer extends Model {
-    
+class QrCode extends Model {
+
 }
 
-Customer.init({
+QrCode.init({
     //model attributes
     id: {
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER
     },
-    shopify_api_id: {
+    title: {
         type: DataTypes.STRING
     },
-    first_name: {
-        type: DataTypes.STRING,
-        notEmpty: true
+    productId: {
+        type: DataTypes.STRING
     },
-    email: {
-        type: DataTypes.STRING,
-        notEmpty: true
-        
+    productVariantId: {
+        type: DataTypes.STRING
+    },
+    productHandle: {
+        type: DataTypes.STRING
+    },
+    scans: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     },
     createdAt: {
         field: 'created_at',
-        type: DataTypes.DATE,
-    },
-    updatedAt: {
-        field: 'updated_at',
         type: DataTypes.DATE,
     }
 }, 
 {
     // Other model options go here
     sequelize, // We need to pass the connection instance
-    modelName: 'Customer', // We need to choose the Model Name (Table Name)
+    modelName: 'QrCode', // We need to choose the Model Name (Table Name)
 },
 )
 
-module.exports = Customer
+module.exports = QrCode

@@ -1,15 +1,12 @@
 module.exports = () => {
-    const functionTrait = require('../traits/functions');
-    const requestTrait = require('../traits/requests');
+    const functionTrait = require('../helpers/functions');
     const mysqlAPI = require("../src/mysql-api")
     const env = require('dotenv').config()
 
-    var accessScopes = 'read_products,write_orders,write_returns,read_customers,write_fulfillments, read_draft_orders';
+    var accessScopes = process.env.SHOPIFY_API_SCOPES.split(',');
     var clientId = env.SHOPIFY_CLIENT_ID;
     var clientSecret = env.SHOPIFY_CLIENT_SECRET;
     var redirectUri = env.APP_URL+'shopify/auth/redirect';
-
-    const shopifyApi = requestTrait.makeAnAPICallToShopify
     const getApIHeaders = functionTrait.getShopifyAPIHeadersForStore
     const apiEndpoint = functionTrait.getShopifyAPIURLForStore
 
