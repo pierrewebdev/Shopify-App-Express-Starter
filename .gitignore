@@ -1,4 +1,5 @@
 .env
 node_modules/
 config.json
-       
+react/node_modules
+react/.env     
